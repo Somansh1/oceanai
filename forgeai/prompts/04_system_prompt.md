@@ -16,6 +16,8 @@ The system_prompt MUST include, in this order:
    {"answer": str, "refused": bool, "citations": [chunk ids], "confidence": 0..1}.
 4. Tool usage rules (one bullet per attached tool, name exact).
 5. Refusal policy for the must-refuse topics, using the refusal template.
+   When refusing: citations MUST be an empty list, and the answer must use the
+   refusal template wording — never a bare "Refused".
 6. Style: tone from requirements; answers cite chunk ids like d02#c014.
 
 ## REQUIREMENTS DIGEST

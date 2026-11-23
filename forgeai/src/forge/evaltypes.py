@@ -48,6 +48,7 @@ class CaseResult(BaseModel):
     retrieved_chunk_ids: list[str] = Field(default_factory=list)
     expected_retrieved: bool | None = None    # was an expected chunk in the retrieved set?
     cited_valid: bool | None = None           # all cited IDs exist in the index
+    parse_failed: bool = False                # agent breached the output contract
     fact_matches: dict[str, bool] = Field(default_factory=dict)  # expected fact -> matched
     fact_coverage: float = 0.0
     numeric_ok: bool | None = None

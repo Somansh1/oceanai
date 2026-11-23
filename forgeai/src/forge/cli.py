@@ -226,5 +226,85 @@ def _ingest_folder(docs: Path, chunk_size: int, overlap: int
     return all_chunks, metas
 
 
+@app.command()
+def evaluate(
+    run_dir: Path = typer.Argument(..., help="Run folder (definition.json + index.sqlite)"),
+    compile_only: bool = typer.Option(False, "--compile-only", help="Only build the eval set"),
+) -> None:
+    """Compile evals from the corpus, run them, judge them, score honestly."""
+    from .evals import compile_evalset
+    from .evaltypes import CaseKind, EvalCase
+    from .judge import build_scorecard, judge_case, pair_consistency
+    from .llm import Harness
+    from .runner import ForgeAgent
+    from .spec import AgentDefinition, RequirementsDoc
+
+    definition = AgentDefinition.model_validate_json(
+        (run_dir / "definition.json").read_text(encoding="utf-8"))
+    req = RequirementsDoc.model_validate_json(
+        (run_dir / "requirements.json").read_text(encoding="utf-8"))
+    index = HybridIndex(run_dir / "index.sqlite")
+    backend = OllamaBackend()
+    harness = Harness(backend)
+    agent = ForgeAgent(harness, index, definition)
+
+    eval_path = run_dir / "evalset.jsonl"
+    if not eval_path.exists():
+        with console.status("[bold cyan]compiling eval set from documents…"):
+            cases = compile_evalset(harness, index, req)
+        eval_path.write_text("\n".join(c.model_dump_json() for c in cases), encoding="utf-8")
+        console.print(f"[green]compiled {len(cases)} eval cases[/green] → {eval_path}")
+    else:
+        cases = [EvalCase.model_validate_json(line) for line in
+                 eval_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        console.print(f"loaded {len(cases)} existing eval cases")
+    if compile_only:
+        return
+
+    results = []
+    kinds = {c.id: c.kind for c in cases}
+    with console.status("") as status:
+        for i, case in enumerate(cases, 1):
+            status.update(f"[bold cyan]evaluating {case.id} ({case.kind.value}) [{i}/{len(cases)}]")
+            resp = agent.answer(case.question)
+            results.append(judge_case(harness, index, case, resp))
+
+        # rephrase pair consistency
+        by_id = {r.case_id: r for r in results}
+        case_by_id = {c.id: c for c in cases}
+        for c in cases:
+            if c.kind == CaseKind.REPHRASE_A and c.rephrase_pair in by_id:
+                ok = pair_consistency(harness, by_id[c.id], by_id[c.rephrase_pair])
+                note = f"pair_consistent={ok}"
+                if ok is False:
+                    c_note = case_by_id[c.id].notes or ""
+                    case_by_id[c.id].notes = (c_note + " | " if c_note else "") + note + " (FAIL)"
+                else:
+                    c_note = case_by_id[c.id].notes or ""
+                    case_by_id[c.id].notes = (c_note + " | " if c_note else "") + note
+
+    scorecard = build_scorecard(results, cases, iteration=definition.iteration)
+    (run_dir / "results.jsonl").write_text(
+        "\n".join(r.model_dump_json() for r in results), encoding="utf-8")
+    (run_dir / "scorecard.json").write_text(scorecard.model_dump_json(indent=2), encoding="utf-8")
+    (run_dir / "ledger.json").write_text(
+        harness.ledger.model_dump_json(indent=2), encoding="utf-8")
+
+    table = Table(title=f"Scorecard — {definition.name} (iteration {definition.iteration})")
+    for col in ("passed", "total", "score", "95% CI", "top failures"):
+        table.add_column(col, justify="center")
+    top_fail = ", ".join(f"{k}:{v}" for k, v in sorted(scorecard.by_failure.items(),
+                                                       key=lambda kv: -kv[1])[:3]) or "—"
+    table.add_row(str(scorecard.passed), str(scorecard.total),
+                  f"{scorecard.score:.0%}", f"[{scorecard.wilson_low:.0%}, {scorecard.wilson_high:.0%}]",
+                  top_fail)
+    console.print(table)
+    for r in results:
+        if not r.passed:
+            c = case_by_id.get(r.case_id)
+            console.print(f"[red]FAIL[/red] {r.case_id} ({kinds.get(r.case_id, '?').value if kinds.get(r.case_id) else '?'})"
+                          f" → {r.failure_class.value if r.failure_class else 'unclassified'}: {c.question[:80] if c else ''}")
+
+
 if __name__ == "__main__":
     app()
