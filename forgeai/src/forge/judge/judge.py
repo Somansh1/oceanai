@@ -17,6 +17,21 @@ from .stats import wilson_interval
 
 _NUM = re.compile(r"-?\d+(?:[.,]\d+)?")
 
+# refused-in-substance: the answer states the information is absent rather
+# than setting refused=true. Deterministic phrase check — no model opinion.
+_SOFT_REFUSAL = re.compile(
+    r"(does not specify|does not mention|not specified in|not covered by|"
+    r"no (policy|information|provision|mention) (is )?(given|specified|found|available)|"
+    r"(policy|documents?|information) (does|do) not (specify|cover|mention|address)|"
+    r"cannot find|could not find|no details?( are)? (given|provided|available)|"
+    r"is not (specified|mentioned|covered|addressed))",
+    re.IGNORECASE,
+)
+
+
+def _soft_refusal(answer: str) -> bool:
+    return bool(_SOFT_REFUSAL.search(answer or ""))
+
 
 def _numbers_in(text: str) -> list[float]:
     return [float(m.replace(",", ".")) for m in _NUM.findall(text or "")]
@@ -49,8 +64,38 @@ def judge_case(harness: Harness, index: HybridIndex, case: EvalCase,
     coverage = (sum(fact_matches.values()) / len(fact_matches)) if fact_matches else 0.0
 
     # ---- pass/fail ----
+    soft = _soft_refusal(resp.answer) if case.expected_refusal else False
+    grounded_reframe = False
     if case.expected_refusal:
-        passed = resp.refused and (not resp.citations or cited_valid)
+        if resp.refused or soft:
+            passed = (not resp.citations or cited_valid)
+        else:
+            # grounded-reframe check: the agent answered a trap using only verified
+            # cited facts (e.g. answered a gender-premise trap with the doc's real
+            # primary/secondary distinction). Verify each answer sentence against
+            # the CITED chunks — no invention means no hallucination.
+            cited_chunks = [index.get_chunk(c) for c in resp.citations if index.get_chunk(c)]
+            if cited_chunks and cited_valid:
+                ctx = "\n\n---\n\n".join(c.text[:2500] for c in cited_chunks)
+                all_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", resp.answer)
+                                 if len(s.strip()) > 25][:4]
+                # scoping statements ("the policy does not differentiate between
+                # male and female employees") are claims-of-absence — strict
+                # entailment cannot verify absence. They are accepted as the
+                # soft-refusal component; the POSITIVE sentences must atom-verify.
+                neg = re.compile(
+                    r"does not (differentiate|distinguish|specify|mention|provide|"
+                    r"address|contain|apply)", re.IGNORECASE)
+                pos_sentences = [s for s in all_sentences if not neg.search(s)]
+                if pos_sentences:
+                    checks = []
+                    for s in pos_sentences:
+                        p, sh = harness.prompts.render("08_fact_match", fact=s,
+                                                       excerpt=ctx[:3000])
+                        checks.append(harness.yes_no(p, stage="judge_reframe",
+                                                     prompt_sha=sh))
+                    grounded_reframe = all(checks)
+            passed = grounded_reframe
     else:
         passed = (
             not resp.refused
@@ -67,6 +112,7 @@ def judge_case(harness: Harness, index: HybridIndex, case: EvalCase,
         expected_retrieved=expected_retrieved, cited_valid=cited_valid,
         fact_matches=fact_matches, fact_coverage=round(coverage, 3),
         numeric_ok=numeric_ok, passed=passed, parse_failed=resp.parse_failed,
+        soft_refusal=soft, grounded_reframe=grounded_reframe,
     )
     result.failure_class = classify_failure(case, result)
     return result

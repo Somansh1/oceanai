@@ -131,6 +131,12 @@ def build(
     out.mkdir(parents=True, exist_ok=True)
     brief_text = brief.read_text(encoding="utf-8")
 
+    # idempotent rebuild: a stale index from a previous build collides with
+    # vec0 virtual tables (INSERT OR REPLACE is not honored by sqlite-vec)
+    stale_index = out / "index.sqlite"
+    if stale_index.exists():
+        stale_index.unlink()
+
     with console.status("") as status:
         status.update("[bold cyan]ingesting documents…")
         all_chunks, metas = _ingest_folder(docs, chunk_size, overlap)
@@ -306,5 +312,105 @@ def evaluate(
                           f" → {r.failure_class.value if r.failure_class else 'unclassified'}: {c.question[:80] if c else ''}")
 
 
+@app.command()
+def optimize(
+    run_dir: Path = typer.Argument(..., help="Run folder (definition + evalset + index)"),
+    max_iterations: int = typer.Option(3, "--max-iterations"),
+    min_gain: float = typer.Option(0.03, "--min-gain", help="Early-stop marginal-gain threshold"),
+    skip_tournament: bool = typer.Option(False, "--skip-tournament"),
+) -> None:
+    """The critic-optimizer loop: triage -> ONE surgical patch -> re-eval, logged."""
+    import dataclasses
+
+    from .critic import optimize as run_optimize
+    from .evaltypes import CaseResult, EvalCase
+    from .judge import build_scorecard, judge_case
+    from .llm import Harness
+    from .runner import ForgeAgent
+    from .spec import AgentDefinition, RequirementsDoc
+
+    definition = AgentDefinition.model_validate_json(
+        (run_dir / "definition.json").read_text(encoding="utf-8"))
+    req = RequirementsDoc.model_validate_json(
+        (run_dir / "requirements.json").read_text(encoding="utf-8"))
+    index = HybridIndex(run_dir / "index.sqlite")
+    harness = Harness(OllamaBackend())
+    cases = [EvalCase.model_validate_json(line) for line in
+             (run_dir / "evalset.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+
+    def evaluator(defn: AgentDefinition, case_subset: list | None = None
+                  ) -> tuple[list[CaseResult], "IterationScorecard"]:
+        agent = ForgeAgent(harness, index, defn)
+        active = case_subset if case_subset is not None else cases
+        results = []
+        for case in active:
+            resp = agent.answer(case.question)
+            results.append(judge_case(harness, index, case, resp))
+        return results, build_scorecard(results, active, iteration=defn.iteration)
+
+    candidates = None
+    if not skip_tournament and (run_dir / "candidates.json").exists():
+        import json as _json
+        raw = _json.loads((run_dir / "candidates.json").read_text(encoding="utf-8"))
+        cand_list = [c for c in raw if isinstance(c, dict) and "system_prompt" in c][:3]
+        candidates = [
+            AgentDefinition(
+                name=c.get("name", f"candidate-{i}"), system_prompt=c["system_prompt"],
+                requirements_digest=definition.requirements_digest,
+                tools=definition.tools, rejected_tools=definition.rejected_tools,
+                output_contract=definition.output_contract,
+                refusal_policy=definition.refusal_policy)
+            for i, c in enumerate(cand_list, 1)]
+
+    with console.status("[bold cyan]optimizing…"):
+        result = run_optimize(evaluator, definition, cases, candidates=candidates,
+                              max_iterations=max_iterations, min_gain=min_gain)
+    # the tournament winner is the agent now — it carries the agent's name;
+    # candidate identities stay in the tournament log
+    result.definition.name = definition.name
+
+    (run_dir / "definition.json").write_text(
+        result.definition.model_dump_json(indent=2), encoding="utf-8")
+    iterations_blob = {
+        "entries": [
+            {"scorecard": e.scorecard.model_dump(),
+             "patches": [p.model_dump() for p in e.patches], "note": e.note}
+            for e in result.entries],
+        "tournament_log": result.tournament_log,
+        "stopped_early": result.stopped_early,
+    }
+    (run_dir / "iterations.json").write_text(
+        json.dumps(iterations_blob, indent=2), encoding="utf-8")
+    # final refresh: regenerate results.jsonl + scorecard.json from the final
+    # definition so the report and repo artifacts reflect the shipped agent
+    final_results, final_scorecard = evaluator(result.definition)
+    (run_dir / "results.jsonl").write_text(
+        "\n".join(r.model_dump_json() for r in final_results), encoding="utf-8")
+    (run_dir / "scorecard.json").write_text(
+        final_scorecard.model_dump_json(indent=2), encoding="utf-8")
+    (run_dir / "ledger.json").write_text(
+        harness.ledger.model_dump_json(indent=2), encoding="utf-8")
+    console.print(f"\n[green]optimization complete:[/green] {final_scorecard.passed}/{final_scorecard.total} "
+                  f"({final_scorecard.score:.0%}, CI [{final_scorecard.wilson_low:.0%}, {final_scorecard.wilson_high:.0%}]) "
+                  f"after {len(result.entries)} evaluated steps"
+                  + (" [yellow](stopped early)[/yellow]" if result.stopped_early else ""))
+    for e in result.entries:
+        for p in e.patches:
+            console.print(f"  iter {p.iteration}: {p.failure_class.value} → {p.change[:80]} "
+                          f"[{p.score_before:.0%} → {p.score_after:.0%}]")
+
+
+@app.command()
+def report(run_dir: Path = typer.Argument(..., help="Run folder")) -> None:
+    """Build the honest markdown report from a run's artifacts."""
+    from .report import build_report
+
+    text = build_report(run_dir)
+    out = run_dir / "report.md"
+    out.write_text(text, encoding="utf-8")
+    console.print(f"[green]report written:[/green] {out} ({len(text)} chars)")
+
+
 if __name__ == "__main__":
     app()
+

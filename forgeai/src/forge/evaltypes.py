@@ -55,6 +55,8 @@ class CaseResult(BaseModel):
     passed: bool = False
     failure_class: FailureClass | None = None
     judge_unstable: bool = False
+    soft_refusal: bool = False        # refused-in-substance: "not specified/covered"
+    grounded_reframe: bool = False    # canary answered with verified cited facts, no invention
 
 
 class IterationScorecard(BaseModel):

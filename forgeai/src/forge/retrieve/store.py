@@ -85,8 +85,10 @@ class HybridIndex:
                     f"vec0(chunk_id TEXT PRIMARY KEY, embedding float[{dim}])"
                 )
                 for c, e in zip(chunks, embeddings):
+                    # vec0 does not honor INSERT OR REPLACE — delete first
+                    self.conn.execute("DELETE FROM vec_chunks WHERE chunk_id = ?", (c.id,))
                     self.conn.execute(
-                        "INSERT OR REPLACE INTO vec_chunks VALUES (?, ?)",
+                        "INSERT INTO vec_chunks VALUES (?, ?)",
                         (c.id, np.asarray(e, dtype=np.float32).tobytes()),
                     )
             else:
