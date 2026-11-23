@@ -11,3 +11,8 @@ dist/
 runs/scratch/
 *.sqlite-journal
 .DS_Store
+# local logs / test fixtures
+*.log
+chat_in.txt
+build_out.log
+build_err.log
