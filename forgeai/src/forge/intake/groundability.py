@@ -22,6 +22,60 @@ class EvidenceVerdict(BaseModel):
     reasoning: str = ""
 
 
+# Synonym equivalence classes: "costs" must match "charged at USD", "stay"
+# must match "occupancy". Vocabulary-blind matching once rewrote covered
+# topics ("berth change or stay costs") into must-refuse and poisoned the
+# agent's refusal policy with its own core scope.
+_SYNONYM_CLASSES = [
+    {"cost", "costs", "fee", "fees", "charge", "charges", "charged", "price",
+     "prices", "pricing", "rate", "rates", "tariff", "tariffs", "due", "dues"},
+    {"weather", "wind", "swell", "sea", "wave", "forecast", "conditions",
+     "storm", "marine"},
+    {"stay", "occupancy", "berthing", "alongside", "turnaround"},
+    {"leave", "vacation", "absence", "holiday"},
+    {"vessel", "ship", "tanker", "craft"},
+    {"schedule", "arrival", "eta", "berth", "berths"},
+]
+
+# Tool capability map: tools extend groundability. Live-data topics have no
+# document evidence by design — open_meteo supplies them.
+_TOOL_TOPICS = {
+    "open_meteo": ["weather", "wind", "swell", "sea condition", "forecast",
+                   "wave", "sea state", "current condition"],
+    "now": ["current date", "today", "how many days", "next vessel",
+            "upcoming", "relative"],
+    "calculator": ["cost", "fee", "charge", "price", "total", "demurrage",
+                   "difference", "compute", "arithmetic"],
+    "csv_lookup": ["schedule", "berth", "vessel", "imo", "lookup", "price list"],
+}
+
+
+def _expand(term: str) -> set[str]:
+    out = {term}
+    for cls in _SYNONYM_CLASSES:
+        if term in cls:
+            out |= cls
+    return out
+
+
+def _terms_present(terms: list[str], text: str) -> int:
+    """How many topic terms appear in text, honoring synonym classes."""
+    low = text.lower()
+    count = 0
+    for t in terms:
+        if any(s in low for s in _expand(t)):
+            count += 1
+    return count
+
+
+def _tool_backed(topic: str, attached: list[str]) -> str | None:
+    low = topic.lower()
+    for tool, kws in _TOOL_TOPICS.items():
+        if tool in attached and any(k in low for k in kws):
+            return tool
+    return None
+
+
 def _topic_terms(topic: str) -> list[str]:
     from ..retrieve.bm25 import tokenize
     return [t for t in tokenize(topic) if len(t) > 2]
@@ -32,8 +86,8 @@ def _corroborate(topic: str, hits: list[tuple[str, float]], index: HybridIndex
     """Deterministic evidence check. Returns (chunk_id, snippet, heading_match).
 
     heading_match=True when a markdown heading in the chunk contains a head
-    topic term — near-conclusive structural evidence (the corpus has a whole
-    SECTION on this topic)."""
+    topic term (synonym classes honored) — near-conclusive structural
+    evidence (the corpus has a whole SECTION on this topic)."""
     terms = _topic_terms(topic)
     if not terms:
         return None, None, False
@@ -42,12 +96,14 @@ def _corroborate(topic: str, hits: list[tuple[str, float]], index: HybridIndex
         if not chunk:
             continue
         low = chunk.text.lower()
-        present = [t for t in terms if t in low]
+        present = _terms_present(terms, low)
         need = max(2, -(-len(terms) * 3 // 5))
-        if len(present) >= min(need, len(terms)):
+        if present >= min(need, len(terms)):
             headings = [h.lower() for h in re.findall(r"^#{1,3}\s+(.+)$", chunk.text, flags=re.M)]
-            heading_hit = any(any(t in h for t in terms) for h in headings)
-            pos = low.find(present[0])
+            heading_hit = any(_terms_present(terms, h) > 0 for h in headings)
+            # quote a window around the first matched term
+            first = next((s for t in terms for s in _expand(t) if s in low), terms[0])
+            pos = low.find(first)
             start = max(0, pos - 80)
             snippet = chunk.text[start : pos + 160].replace("\n", " ")
             return cid, snippet, heading_hit
@@ -125,11 +181,22 @@ def _probe_topic(harness: Harness, index: HybridIndex, topic: str) -> TopicCover
     )
 
 
-def run_groundability(harness: Harness, index: HybridIndex, req: RequirementsDoc) -> RequirementsDoc:
-    """Probe every must-answer topic; rewrite unsupported ones into must-refuse."""
+def run_groundability(harness: Harness, index: HybridIndex, req: RequirementsDoc,
+                      attached_tools: list[str] | None = None) -> RequirementsDoc:
+    """Probe every must-answer topic; rewrite unsupported ones into must-refuse.
+
+    Tools extend groundability: a live-data topic with no document evidence by
+    design stays must-answer when its supplying tool is attached."""
+    attached = attached_tools or []
     rows: list[TopicCoverage] = []
     rewriting: list[TopicCoverage] = []
     for topic in req.must_answer_topics:
+        tool = _tool_backed(topic, attached)
+        if tool and not _probe_topic_would_pass(harness, index, topic):
+            rows.append(TopicCoverage(
+                topic=topic, status="supported", evidence_density=0.0,
+                supporting_chunk_ids=[], note=f"supported via attached tool '{tool}' (live data)"))
+            continue
         row = _probe_topic(harness, index, topic)
         rows.append(row)
         if row.status == "unsupported":
@@ -140,3 +207,10 @@ def run_groundability(harness: Harness, index: HybridIndex, req: RequirementsDoc
     req.must_answer_topics = [t for t in req.must_answer_topics if t not in rewrite_names]
     req.groundability = GroundabilityMap(rows=rows, rewritten_to_refusal=rewriting)
     return req
+
+
+def _probe_topic_would_pass(harness: Harness, index: HybridIndex, topic: str) -> bool:
+    """Cheap pre-check: deterministic corroboration already passes?"""
+    hits = index.query(topic, top_k=5)
+    cid, _snippet, heading = _corroborate(topic, hits, index)
+    return bool(cid and heading)

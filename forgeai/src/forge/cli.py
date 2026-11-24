@@ -122,6 +122,7 @@ def build(
     from .generate import generate_agent, generate_prompt_candidates, tournament
     from .intake import build_inventory, run_groundability, run_interview, synthesize_requirements
     from .llm import Harness
+    from .spec import ToolBinding
 
     if not brief.is_file() or not docs.is_dir():
         console.print("[red]brief must be a file, docs must be a directory[/red]")
@@ -157,12 +158,15 @@ def build(
         status.update("[bold cyan]synthesizing requirements…")
         req = synthesize_requirements(harness, brief_text, inventory, assumptions)
 
-        status.update("[bold cyan]probing groundability…")
-        req = run_groundability(harness, index, req)
-
         status.update("[bold cyan]selecting tools…")
         from .generate.generator import _tool_selection
-        tools = _tool_selection(harness, req, inventory)
+        data_files = [str(p.resolve()) for p in sorted(docs.rglob("*"))
+                      if p.is_file() and p.suffix.lower() in (".csv", ".xlsx")]
+        tools = _tool_selection(harness, req, inventory, data_files)
+        attached_names = [t["name"] for t in tools.selected]
+
+        status.update("[bold cyan]probing groundability…")
+        req = run_groundability(harness, index, req, attached_tools=attached_names)
 
         status.update("[bold cyan]generating prompt candidates…")
         candidates = generate_prompt_candidates(harness, req, [ToolBinding(**t) for t in tools.selected])

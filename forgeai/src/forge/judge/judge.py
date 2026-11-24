@@ -37,6 +37,29 @@ def _numbers_in(text: str) -> list[float]:
     return [float(m.replace(",", ".")) for m in _NUM.findall(text or "")]
 
 
+_CONTENT_TOKENS = re.compile(r"[a-z]{3,}")
+
+
+def _deterministic_fact_match(fact: str, answer: str) -> bool:
+    """Numbers do the deciding: if every number in the fact appears in the
+    answer (or as its day<->hour transform) and at least one content token
+    is shared, the fact is matched. ('USD 4,500' once failed against
+    'USD 4,500 per call' because the atom model judged too strictly; a
+    correctly derived 770.83/hour failed against an 18,500/day rule.)"""
+    fnums, anums = _numbers_in(fact), _numbers_in(answer)
+    if not fnums:
+        return False
+    expanded = set(anums)
+    for n in anums:
+        expanded.add(round(n / 24, 4))
+        expanded.add(round(n * 24, 4))
+    if not all(any(abs(fn - e) < 0.01 for e in expanded) for fn in fnums):
+        return False
+    ftoks = set(_CONTENT_TOKENS.findall(fact.lower()))
+    atoks = set(_CONTENT_TOKENS.findall(answer.lower()))
+    return bool(ftoks & atoks)
+
+
 def _numeric_ok(answer: str, expected: float, tol_rel: float = 0.02) -> bool | None:
     nums = _numbers_in(answer)
     if not nums:
@@ -58,6 +81,9 @@ def judge_case(harness: Harness, index: HybridIndex, case: EvalCase,
     fact_matches: dict[str, bool] = {}
     if case.expected_facts and not resp.refused:
         for fact in case.expected_facts:
+            if _deterministic_fact_match(fact, resp.answer):
+                fact_matches[fact] = True
+                continue
             prompt, sha = harness.prompts.render("08_fact_match", fact=fact,
                                                  excerpt=resp.answer[:3000] or "(empty answer)")
             fact_matches[fact] = harness.yes_no(prompt, stage="judge_l1", prompt_sha=sha)

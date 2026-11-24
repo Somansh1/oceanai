@@ -32,10 +32,12 @@ def patch_refusal_posture(defn: AgentDefinition) -> str:
 def patch_completeness(defn: AgentDefinition) -> str:
     _append(defn, "Answer completeness",
             "Address EVERY part of the question. For comparisons: state BOTH sides with "
-            "their numbers. For 'how many' questions: give the total AND the rule behind "
-            "it. For entitlement questions about a specific case (e.g. join date): state "
-            "the general rule and apply it to the case with the arithmetic shown.")
-    return "appended 'Answer completeness' section: comparisons must state both sides; totals + rules"
+            "their numbers AND the difference. For 'how many' questions: give the total AND "
+            "the rule behind it. For entitlement or fee questions about a specific case: "
+            "state the general rule and apply it to the case with the arithmetic shown. "
+            "Use the calculator tool for ALL arithmetic — never compute in your head.")
+    return ("appended 'Answer completeness' section: comparisons state both sides + "
+            "difference; calculator mandatory for arithmetic")
 
 
 def patch_grounding(defn: AgentDefinition) -> str:

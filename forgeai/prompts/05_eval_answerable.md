@@ -9,8 +9,15 @@ one of ["lookup", "comparison", "aggregation", "negation"], "difficulty":
 "easy"|"medium"|"hard"}
 
 Rules:
-- expected_facts: 2-5 SHORT atomic claims, each independently checkable,
-  lifted from the chunk (numbers, names, deadlines, conditions).
+- expected_facts: SHORT atomic claims, each independently checkable, lifted
+  from the chunk. FACTS MUST MATCH THE QUESTION'S INFORMATION DEMAND: a
+  single-value lookup ("what is the price of X?") needs exactly ONE fact —
+  padding with extra facts the question never asked for punishes correct
+  terse answers. Multi-part questions get one fact per part.
+- For "which X is cheapest/best/longest" questions, the facts describe the
+  WINNER and its value (e.g. "Harbour Fuel Partners offers VLSFO at 598 USD
+  per ton") — NOT the prices of every candidate; a correct answer names the
+  winner, not the whole table.
 - The question must be answerable from THIS chunk alone.
 - Vary phrasing naturally; do not copy chunk sentences into the question.
 

@@ -1,0 +1,8 @@
+port,supplier,fuel_grade,price_usd_ton,valid_from
+Meridian Harbour,Vortex Bunkering,VLSFO,612,2026-11-20
+Meridian Harbour,Vortex Bunkering,MGO,864,2026-11-20
+Meridian Harbour,Harbour Fuel Partners,VLSFO,598,2026-11-22
+Meridian Harbour,Harbour Fuel Partners,HSFO,541,2026-11-22
+Meridian Harbour,Harbour Fuel Partners,MGO,871,2026-11-22
+Meridian Harbour,Delta Marine Supplies,MGO,849,2026-11-25
+Meridian Harbour,Delta Marine Supplies,VLSFO,606,2026-11-25

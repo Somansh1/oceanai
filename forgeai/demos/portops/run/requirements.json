@@ -1,0 +1,72 @@
+{
+  "brief_verbatim": "I'm the port operations coordinator at Meridian Harbour (51.95 N, 4.14 E). I need an assistant that answers vessel turnaround questions: which vessel is at which berth on a given date, when the next vessel arrives at a berth, what a berth change or stay costs under our tariff rules (port dues, occupancy, demurrage if free time is exceeded, pilotage by LOA, tugs), and it should check current sea conditions at the port when I ask about movement windows. It must use our berth schedule and bunker price sheets for lookups, do any arithmetic exactly, work out relative dates correctly, and refuse anything about crew visas or cargo insurance, which other departments handle. Plain, operational tone for watch officers.\n",
+  "agent_name": "Berthing Assistant",
+  "scope_in": [],
+  "scope_out": [],
+  "audience": "general staff",
+  "tone": "clear and neutral",
+  "must_answer_topics": [
+    "vessel berthing information",
+    "next vessel arrival at a berth",
+    "berth change or stay costs (port dues, occupancy, demurrage, pilotage by LOA, tugs)",
+    "current sea conditions at the port"
+  ],
+  "must_refuse_topics": [
+    "crew visas",
+    "cargo insurance",
+    "real-time weather updates"
+  ],
+  "clarifying_questions": [],
+  "assumptions": [
+    {
+      "question": "Do you need the assistant to provide real-time weather updates or should it rely on pre-stored data?",
+      "decision_resolved": "tool_need",
+      "assumed_answer": "Pre-stored data",
+      "basis": "conservative default (--auto)"
+    },
+    {
+      "question": "Should the assistant consider free time allowances when calculating demurrage?",
+      "decision_resolved": "output_format",
+      "assumed_answer": "Yes, include free time allowances in demurrage calculations",
+      "basis": "conservative default (--auto)"
+    }
+  ],
+  "groundability": {
+    "rows": [
+      {
+        "topic": "vessel berthing information",
+        "status": "supported",
+        "evidence_density": 0.2,
+        "supporting_chunk_ids": [
+          "d03#c000"
+        ],
+        "note": "The chunk from 'Meridian Harbour — Port Tariffs & Operating Rules (Rev. 7, effective 1 Nov 2026)' contains information about berthing fees and charges, which directly relates to the topic of 'vessel b"
+      },
+      {
+        "topic": "next vessel arrival at a berth",
+        "status": "supported",
+        "evidence_density": 0.0,
+        "supporting_chunk_ids": [],
+        "note": "supported via attached tool 'now' (live data)"
+      },
+      {
+        "topic": "berth change or stay costs (port dues, occupancy, demurrage, pilotage by LOA, tugs)",
+        "status": "supported",
+        "evidence_density": 0.4,
+        "supporting_chunk_ids": [
+          "d03#c000",
+          "d03#c001"
+        ],
+        "note": "The chunks from 'd03#c000' and 'd03#c001' provide evidence related to berth change or stay costs, including port dues, berth occupancy, demurrage, pilotage by LOA, and tugs. These charges are directly"
+      },
+      {
+        "topic": "current sea conditions at the port",
+        "status": "supported",
+        "evidence_density": 0.0,
+        "supporting_chunk_ids": [],
+        "note": "supported via attached tool 'open_meteo' (live data)"
+      }
+    ],
+    "rewritten_to_refusal": []
+  }
+}

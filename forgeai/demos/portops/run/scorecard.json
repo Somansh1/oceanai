@@ -1,0 +1,18 @@
+{
+  "iteration": 2,
+  "total": 18,
+  "passed": 11,
+  "score": 0.6111,
+  "wilson_low": 0.3862,
+  "wilson_high": 0.797,
+  "by_class": {
+    "rephrase_b": 1,
+    "numeric": 1,
+    "refusal": 1,
+    "answerable": 3,
+    "rephrase_a": 1
+  },
+  "by_failure": {
+    "hallucination": 7
+  }
+}

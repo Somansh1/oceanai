@@ -8,6 +8,8 @@ from __future__ import annotations
 import json
 import re
 
+from pydantic import BaseModel, Field
+
 from ..llm import Harness, _extract_json
 from ..retrieve import HybridIndex
 from ..spec import AgentDefinition
@@ -36,8 +38,17 @@ class AgentResponse:
 def run_tool_loop(harness: Harness, definition: AgentDefinition,
                   question: str, context: str, max_calls: int = 3) -> tuple[str, list[dict]]:
     """Let the agent request tools via TOOL: {json} lines; code executes them."""
-    attachments = "\n".join(f"- {t.name}: {REGISTRY[t.name].description}\n  call: {REGISTRY[t.name].usage}"
-                            for t in definition.tools)
+    attachments = []
+    for t in definition.tools:
+        tool = REGISTRY.get(t.name)
+        if not tool:
+            continue
+        line = f"- {tool.name}: {tool.description}\n  call: {tool.usage}"
+        files = (t.config or {}).get("files")
+        if files:
+            line += "\n  data files: " + ", ".join(files)
+        attachments.append(line)
+    attachments = "\n".join(attachments)
     transcript = ""
     calls: list[dict] = []
     for _ in range(max_calls):
@@ -51,10 +62,10 @@ def run_tool_loop(harness: Harness, definition: AgentDefinition,
             ("\n\nTool results so far:\n" + transcript[-2000:] if transcript else "")
         )
         out = harness.ask_text(prompt, stage="tool_loop", temperature=0.1)
-        m = re.search(r"TOOL:\s*(\{.*?\})", out, re.S)
+        m = re.search(r"TOOL:", out)
         if m:
             try:
-                req = json.loads(m.group(1))
+                req = json.loads(_balanced_json(out[m.end():]))
                 tool = REGISTRY.get(str(req.get("tool", "")))
                 if tool is None:
                     transcript += f"\ntool {req.get('tool')}: unknown tool"
@@ -70,7 +81,45 @@ def run_tool_loop(harness: Harness, definition: AgentDefinition,
             if fm:
                 return fm.group(1).strip(), calls
             return out.strip()[:400], calls
-    return "", calls
+    return transcript[-2000:] if transcript else "", calls
+
+
+def _balanced_json(text: str) -> str:
+    """Extract a balanced JSON object. The old non-greedy regex truncated
+    nested args objects at the first closing brace — three tool calls in a
+    row died as 'bad json' before this existed."""
+    start = text.find("{")
+    if start == -1:
+        return text.strip()
+    depth, in_str, esc = 0, False, False
+    for i in range(start, len(text)):
+        ch = text[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+        else:
+            if ch == '"':
+                in_str = True
+            elif ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    return text[start : i + 1]
+    return text[start:].strip()
+
+
+class ContractAnswer(BaseModel):
+    """The output contract as a schema — enforced by the repair loop, not by
+    hopeful parsing. One '(unparseable)' case died to make this happen."""
+    answer: str = ""
+    refused: bool = False
+    citations: list[str] = Field(default_factory=list)
+    confidence: float | None = None
 
 
 class ForgeAgent:
@@ -103,18 +152,32 @@ class ForgeAgent:
         )
         raw = self.harness.ask_text(user_msg, system=self.definition.system_prompt,
                                     stage="agent_answer", temperature=0.1)
+        from ..llm import StructuredGenError
         try:
-            data = json.loads(_extract_json(raw))
+            data = self.harness.ask_json(ContractAnswer, user_msg,
+                                         system=self.definition.system_prompt,
+                                         stage="agent_answer", temperature=0.1)
             resp = AgentResponse(
-                answer=str(data.get("answer", "")), refused=bool(data.get("refused", False)),
-                citations=[str(c) for c in data.get("citations", [])],
+                answer=data.answer, refused=data.refused, citations=data.citations,
                 retrieved=retrieved_ids, raw=raw, tool_calls=tool_calls,
-                confidence=_num_or_none(data.get("confidence")), parse_failed=False)
-        except (json.JSONDecodeError, ValueError):
-            resp = AgentResponse(answer="(unparseable)", refused=False, citations=[],
-                                 retrieved=retrieved_ids, raw=raw, tool_calls=tool_calls,
-                                 parse_failed=True)
-        return resp
+                confidence=data.confidence, parse_failed=False)
+            return resp
+        except StructuredGenError as exc:
+            # last-ditch: salvage whatever JSON the model produced
+            try:
+                salvaged = json.loads(_extract_json(exc.raw))
+                resp = AgentResponse(
+                    answer=str(salvaged.get("answer", "(unparseable)")),
+                    refused=bool(salvaged.get("refused", False)),
+                    citations=[str(c) for c in salvaged.get("citations", [])],
+                    retrieved=retrieved_ids, raw=exc.raw, tool_calls=tool_calls,
+                    confidence=_num_or_none(salvaged.get("confidence")),
+                    parse_failed=True)
+            except (json.JSONDecodeError, ValueError):
+                resp = AgentResponse(answer="(unparseable)", refused=False, citations=[],
+                                     retrieved=retrieved_ids, raw=exc.raw, tool_calls=tool_calls,
+                                     parse_failed=True)
+            return resp
 
 
 def _num_or_none(v) -> float | None:

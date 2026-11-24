@@ -44,12 +44,41 @@ class ToolDecision(BaseModel):
         return self
 
 
-def _tool_selection(harness: Harness, req: RequirementsDoc, inventory: str) -> ToolDecision:
+_HINT_RULES = {
+    "calculator": ["cost", "fee", "demurrage", "charge", "price", "total",
+                   "arithmetic", "exactly", "compute", "calculate", "per ton",
+                   "difference"],
+    "open_meteo": ["weather", "sea condition", "wind", "swell", "forecast",
+                   "wave", "marine"],
+    "now": ["next vessel", "current", "today", "as of", "upcoming",
+            "relative date", "this week", "remain"],
+}
+
+
+def _hinted_tools(brief: str, data_files: list[str] | None) -> dict[str, str]:
+    """Deterministic hints from the brief. The selector LLM once rejected the
+    calculator/now/open_meteo on a brief that explicitly demanded exact
+    arithmetic, relative dates and sea conditions — code disposes over it."""
+    low = brief.lower()
+    hints: dict[str, str] = {}
+    for name, kws in _HINT_RULES.items():
+        hit = next((k for k in kws if k in low), None)
+        if hit:
+            hints[name] = f"brief keyword rule matched '{hit}'"
+    if data_files:
+        hints.setdefault("csv_lookup", "structured data files present in the document folder")
+    return hints
+
+
+def _tool_selection(harness: Harness, req: RequirementsDoc, inventory: str,
+                    data_files: list[str] | None = None) -> ToolDecision:
     class ToolOut(BaseModel):
         selected: list[dict[str, str]]
         rejected: list[dict[str, str]]
 
     catalog = "\n".join(f"- {t.description}\n  {t.usage}" for t in REGISTRY.values())
+    files_note = ("\n\n## DATA FILES AVAILABLE FOR csv_lookup\n"
+                  + "\n".join(f"- {f}" for f in (data_files or []))) if data_files else ""
     prompt = (
         "You are the tool selector of an agent factory. Attach ONLY the tools this brief "
         "genuinely needs. Attaching an unneeded tool is a factory defect.\n\n"
@@ -58,11 +87,32 @@ def _tool_selection(harness: Harness, req: RequirementsDoc, inventory: str) -> T
         "\"rejected\": [{\"name\", \"reason\"}]}\n\n"
         "## BRIEF\n" + req.brief_verbatim +
         "\n\n## REQUIREMENTS DIGEST\n" + _digest(req) +
-        "\n\n## DOCUMENT INVENTORY\n" + inventory +
+        "\n\n## DOCUMENT INVENTORY\n" + inventory + files_note +
         "\n\n## TOOL CATALOG\n" + catalog)
     out = harness.ask_json(ToolOut, prompt, stage="tool_selection", temperature=0.1)
     d = ToolDecision(selected=out.selected, rejected=out.rejected)
-    return d.sanitize(harness)
+    d = d.sanitize(harness)
+    if data_files:
+        for t in d.selected:
+            if t.get("name") == "csv_lookup":
+                t["config"] = {"files": data_files}
+
+    # ENFORCEMENT: brief-keyword hints override the selector. The override is
+    # labeled in the justification — the report shows every enforced tool.
+    hints = _hinted_tools(req.brief_verbatim, data_files)
+    rejected_names = {r.get("name") for r in d.rejected}
+    for name, basis in hints.items():
+        if any(t.get("name") == name for t in d.selected):
+            continue
+        was = "rejected by selector" if name in rejected_names else "omitted by selector"
+        d.rejected = [r for r in d.rejected if r.get("name") != name]
+        d.selected.append({
+            "name": name,
+            "justification": f"ENFORCED — {basis}; {was}",
+            "invoked_when": "when a question requires it",
+            "config": {"files": data_files} if name == "csv_lookup" and data_files else {},
+        })
+    return d
 
 
 def _digest(req: RequirementsDoc) -> str:
@@ -77,6 +127,21 @@ def _digest(req: RequirementsDoc) -> str:
     }, indent=1)
 
 
+def _tools_text(bindings: list[ToolBinding]) -> str:
+    from ..tools import REGISTRY
+    lines = []
+    for b in bindings:
+        t = REGISTRY.get(b.name)
+        if not t:
+            continue
+        line = f"- {t.name}: {t.description}\n  call: {t.usage}"
+        files = (b.config or {}).get("files")
+        if files:
+            line += "\n  data files: " + ", ".join(files)
+        lines.append(line)
+    return "\n".join(lines) or "(no tools attached)"
+
+
 def generate_prompt_candidates(harness: Harness, req: RequirementsDoc,
                                tools: list[ToolBinding]) -> list[PromptCandidate]:
     """System prompts are PLAIN TEXT, never JSON-wrapped — small models break
@@ -87,11 +152,10 @@ def generate_prompt_candidates(harness: Harness, req: RequirementsDoc,
         "helpful: answers then cites, gentle refusals, slightly warmer tone.",
     ]
     candidates: list[PromptCandidate] = []
-    tool_names = [t.name for t in tools]
     for i, v in enumerate(variants, 1):
         prompt, sha = harness.prompts.render(
             "04_system_prompt", requirements_digest=_digest(req),
-            tools=format_tools_for_prompt(tool_names), variant=v)
+            tools=_tools_text(tools), variant=v)
         prompt += (
             "\n\nOUTPUT FORMAT: write ONLY the system prompt itself as plain text. "
             "Do not wrap it in JSON, do not add commentary, do not add a title."
