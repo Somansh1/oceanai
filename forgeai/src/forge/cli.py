@@ -11,7 +11,7 @@ from rich.table import Table
 
 from . import __version__
 from .core import Chunk, DocumentMeta, QuarantineRecord, sha256_text
-from .evaltypes import RunManifest
+from .evaltypes import IterationScorecard, RunManifest
 from .ingest import SUPPORTED, chunk_document
 from .llm import OllamaBackend
 from .retrieve import HybridIndex
@@ -339,7 +339,7 @@ def optimize(
     import dataclasses
 
     from .critic import optimize as run_optimize
-    from .evaltypes import CaseResult, EvalCase
+    from .evaltypes import CaseResult, EvalCase, IterationScorecard
     from .judge import build_scorecard, judge_case
     from .llm import Harness
     from .runner import ForgeAgent
@@ -355,7 +355,7 @@ def optimize(
              (run_dir / "evalset.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
 
     def evaluator(defn: AgentDefinition, case_subset: list | None = None
-                  ) -> tuple[list[CaseResult], "IterationScorecard"]:
+                  ) -> tuple[list[CaseResult], IterationScorecard]:
         agent = ForgeAgent(harness, index, defn)
         active = case_subset if case_subset is not None else cases
         results = []
