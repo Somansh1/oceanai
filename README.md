@@ -2,6 +2,8 @@
 
 ForgeAI is an autonomous system that takes a single paragraph brief and a folder of documents, interviews the requester, drafts a declarative agent specification, compiles an adversarial evaluation set directly from document ground-truth, judges the results using a layered deterministic-first scorer, diagnoses failure modes from execution telemetry, applies surgical versioned patches, and delivers a tested, runnable agent accompanied by a verified quality report.
 
+> **Live Deployment:** [Hugging Face Space](https://huggingface.co/spaces/kt0015/oceanai) | **Direct Web App:** [kt0015-oceanai.static.hf.space](https://kt0015-oceanai.static.hf.space)
+>
 > **Core Engineering Thesis:** Control flow, retrieval validation, arithmetic derivation, and score aggregation are code. The model proposes typed candidates; code disposes.
 
 ---
