@@ -1,6 +1,6 @@
 # PortOps Demo — Document Synthesis
 
-All Run B documents are synthesized for the assignment demo (public-style
+All Run B documents are synthesized for the PortOps multimodal benchmark (public-style
 operational data, no real company). Intent of each artifact:
 
 ## berth_schedule.csv

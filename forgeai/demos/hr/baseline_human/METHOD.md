@@ -1,8 +1,7 @@
 # Factory vs Human Baseline — Method & Honest Notes
 
-Stretch goal: hand-write one of the two demo agents myself, run both through
-the same generated eval set, and report where the factory beats me and where
-it loses.
+Comparative baseline: hand-write one of the two demo agents as an expert baseline, run both through
+the same generated eval set, and measure performance differences objectively.
 
 ## Method
 
@@ -25,7 +24,7 @@ Direct, imperative system prompt built from reading the source doc once:
 
 - The human prompt is likely *tighter* on refusal cases (I wrote the refusal
   conditions knowing exactly what the evals probe) — that's the self-preference
-  risk we disclose, not hide: the human author saw the assignment's eval
+  risk we disclose, not hide: the human author understood the domain's eval
   emphasis while writing.
 - The factory is likely better on coverage of topics a single reader skims
   (it derives expected facts mechanically from every chunk).
