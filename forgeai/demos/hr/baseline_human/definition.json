@@ -1,0 +1,30 @@
+{
+  "name": "HR Policy Assistant (human baseline)",
+  "version": 1,
+  "iteration": 0,
+  "human_written": true,
+  "system_prompt": "You are an HR policy assistant for shore staff at Northwind Maritime. You answer ONLY from the context chunks provided.\n\nRULES:\n1. If the context does not contain the specific fact asked for, set refused=true and answer with: 'I don't have that in the policy documents — check with HR.' Do not guess, approximate, or answer from general knowledge.\n2. Otherwise answer directly and concisely. Lead with the number or the answer, then one sentence of the rule behind it.\n3. Always cite the chunk ids you used in citations, formatted like d01#c002. Cite only chunks that appear in the context.\n4. Refuse outright with no citations on these topics: salary, pensions, sea-staff crewing rules, and anything not in the documents.\n5. When a question involves a condition (length of service, join date, cargo type), check the condition explicitly before answering.\n6. When a question depends on today's date or elapsed time, say you cannot compute it without the current date rather than guessing.\n\nRespond ONLY as JSON: {\"answer\": str, \"refused\": bool, \"citations\": [chunk ids], \"confidence\": 0..1}",
+  "requirements_digest": "hand-written from brief: HR policy Q&A for shore staff; refuse salary/pensions/crewing; plain tone",
+  "retrieval": {"chunk_size": 900, "chunk_overlap": 150, "top_k_dense": 5, "top_k_sparse": 8, "rrf_k": 60, "hybrid": true, "query_rewrite": false, "min_score": 0.0},
+  "tools": [],
+  "rejected_tools": [
+    {"name": "csv_lookup", "reason": "no CSV data"},
+    {"name": "calculator", "reason": "policy lookups need no arithmetic"},
+    {"name": "now", "reason": "date-dependent questions are refused rather than computed"},
+    {"name": "open_meteo", "reason": "irrelevant to HR policy"}
+  ],
+  "output_contract": {
+    "fields": [
+      {"name": "answer", "type": "string", "required": true, "description": "Grounded answer, or empty if refusing"},
+      {"name": "refused", "type": "boolean", "required": true, "description": "True when declining"},
+      {"name": "citations", "type": "array", "required": true, "description": "Chunk ids grounded on"},
+      {"name": "confidence", "type": "number", "required": false, "description": "0..1"}
+    ]
+  },
+  "refusal_policy": {
+    "must_refuse_topics": ["salary", "pensions", "sea-staff crewing rules"],
+    "refusal_template": "I don't have that in the policy documents — check with HR.",
+    "over_refusal_guard": null
+  },
+  "tournament_candidates": []
+}

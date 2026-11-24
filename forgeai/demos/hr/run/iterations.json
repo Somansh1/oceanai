@@ -1,0 +1,95 @@
+{
+  "entries": [
+    {
+      "scorecard": {
+        "iteration": 0,
+        "total": 14,
+        "passed": 13,
+        "score": 0.9286,
+        "wilson_low": 0.6853,
+        "wilson_high": 0.9873,
+        "by_class": {
+          "answerable": 1
+        },
+        "by_failure": {
+          "hallucination": 1
+        }
+      },
+      "patches": [
+        {
+          "iteration": 0,
+          "failure_class": "hallucination",
+          "target": "system_prompt/retrieval",
+          "change": "appended 'Refusal discipline' section: refuse when the SPECIFIC fact is absent, even if the topic is covered",
+          "rationale": "dominant failure class hallucination (1 cases)",
+          "failure_ids": [
+            "q01"
+          ],
+          "score_before": 0.9286,
+          "score_after": 0.8571
+        }
+      ],
+      "note": ""
+    },
+    {
+      "scorecard": {
+        "iteration": 0,
+        "total": 14,
+        "passed": 12,
+        "score": 0.8571,
+        "wilson_low": 0.6006,
+        "wilson_high": 0.9599,
+        "by_class": {
+          "answerable": 2
+        },
+        "by_failure": {
+          "hallucination": 2
+        }
+      },
+      "patches": [],
+      "note": "post-patch re-eval (98s)"
+    },
+    {
+      "scorecard": {
+        "iteration": 1,
+        "total": 14,
+        "passed": 12,
+        "score": 0.8571,
+        "wilson_low": 0.6006,
+        "wilson_high": 0.9599,
+        "by_class": {
+          "answerable": 2
+        },
+        "by_failure": {
+          "hallucination": 2
+        }
+      },
+      "patches": [],
+      "note": "no patchable failure class remains (all already patched)"
+    }
+  ],
+  "tournament_log": [
+    {
+      "candidate": "candidate-1",
+      "pilot_score": 0.6,
+      "passed": 3,
+      "total": 5
+    },
+    {
+      "candidate": "candidate-2",
+      "pilot_score": 0.8,
+      "passed": 4,
+      "total": 5
+    },
+    {
+      "candidate": "candidate-3",
+      "pilot_score": 0.8,
+      "passed": 4,
+      "total": 5
+    },
+    {
+      "note": "winner selected on pilot subset before iteration 0"
+    }
+  ],
+  "stopped_early": false
+}

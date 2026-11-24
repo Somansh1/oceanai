@@ -1,0 +1,81 @@
+{
+  "brief_verbatim": "I need an assistant that answers HR policy questions for shore staff at Northwind Maritime. The team asks things like how many annual leave days they get, notice periods for vacation requests, sick leave rules, parental leave entitlements, and what happens with unused days. It should only answer from our policy documents, and politely refuse anything about salary, pensions, or sea-staff crewing rules, which are handled by other departments. Tone should be plain and helpful for non-HR people.\n\nDocuments: demos/hr/docs/ (HR leave policy document set).\n",
+  "agent_name": "HR Department",
+  "scope_in": [],
+  "scope_out": [],
+  "audience": "general staff",
+  "tone": "clear and neutral",
+  "must_answer_topics": [
+    "Annual Leave Entitlement",
+    "Sick Leave",
+    "Parental Leave",
+    "Unpaid Leave and Sabbatical",
+    "Public Holidays"
+  ],
+  "must_refuse_topics": [
+    "salary",
+    "pensions",
+    "sea-staff crewing rules"
+  ],
+  "clarifying_questions": [],
+  "assumptions": [
+    {
+      "question": "Do we need to specify any particular format for the assistant's responses?",
+      "decision_resolved": "output_format",
+      "assumed_answer": "plain text",
+      "basis": "conservative default (--auto)"
+    }
+  ],
+  "groundability": {
+    "rows": [
+      {
+        "topic": "Annual Leave Entitlement",
+        "status": "supported",
+        "evidence_density": 0.333,
+        "supporting_chunk_ids": [
+          "d01#c000"
+        ],
+        "note": "The chunk provides details on the annual leave entitlement, including the number of days, pro-rata entitlement, carryover rules, and the process for requesting leave. This information directly address"
+      },
+      {
+        "topic": "Sick Leave",
+        "status": "supported",
+        "evidence_density": 0.667,
+        "supporting_chunk_ids": [
+          "d01#c000",
+          "d01#c001"
+        ],
+        "note": "Both chunks [d01#c000] and [d01#c001] contain information about sick leave policies, including the number of paid sick days, the requirement for a medical certificate for longer absences, and the fact"
+      },
+      {
+        "topic": "Parental Leave",
+        "status": "supported",
+        "evidence_density": 0.333,
+        "supporting_chunk_ids": [
+          "d01#c002"
+        ],
+        "note": "The chunk from 'Unpaid Leave and Sabbatical' section directly states the parental leave entitlements, including the number of weeks for primary and secondary caregivers, which provides evidence about "
+      },
+      {
+        "topic": "Unpaid Leave and Sabbatical",
+        "status": "supported",
+        "evidence_density": 0.667,
+        "supporting_chunk_ids": [
+          "d01#c001",
+          "d01#c002"
+        ],
+        "note": "The chunks from 'd01#c001' and 'd01#c002' provide direct evidence about unpaid leave and sabbatical policies, including eligibility criteria and procedures. These sections contain factual information "
+      },
+      {
+        "topic": "Public Holidays",
+        "status": "supported",
+        "evidence_density": 1.0,
+        "supporting_chunk_ids": [
+          "d01#c002"
+        ],
+        "note": "The chunk discusses the company's observance of public holidays, including the number of holidays, compensatory days, and double pay for those working on public holidays. This provides evidence about "
+      }
+    ],
+    "rewritten_to_refusal": []
+  }
+}

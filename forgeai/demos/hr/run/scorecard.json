@@ -1,0 +1,14 @@
+{
+  "iteration": 1,
+  "total": 14,
+  "passed": 12,
+  "score": 0.8571,
+  "wilson_low": 0.6006,
+  "wilson_high": 0.9599,
+  "by_class": {
+    "answerable": 2
+  },
+  "by_failure": {
+    "hallucination": 2
+  }
+}

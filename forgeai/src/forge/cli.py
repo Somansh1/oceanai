@@ -240,6 +240,7 @@ def _ingest_folder(docs: Path, chunk_size: int, overlap: int
 def evaluate(
     run_dir: Path = typer.Argument(..., help="Run folder (definition.json + index.sqlite)"),
     compile_only: bool = typer.Option(False, "--compile-only", help="Only build the eval set"),
+    definition: Path = typer.Option(None, "--definition", help="Alternate definition (e.g. human baseline)"),
 ) -> None:
     """Compile evals from the corpus, run them, judge them, score honestly."""
     from .evals import compile_evalset
@@ -249,14 +250,18 @@ def evaluate(
     from .runner import ForgeAgent
     from .spec import AgentDefinition, RequirementsDoc
 
-    definition = AgentDefinition.model_validate_json(
-        (run_dir / "definition.json").read_text(encoding="utf-8"))
+    if definition is not None:
+        defn_path = definition
+    else:
+        defn_path = run_dir / "definition.json"
+    definition_obj = AgentDefinition.model_validate_json(
+        defn_path.read_text(encoding="utf-8"))
     req = RequirementsDoc.model_validate_json(
         (run_dir / "requirements.json").read_text(encoding="utf-8"))
     index = HybridIndex(run_dir / "index.sqlite")
     backend = OllamaBackend()
     harness = Harness(backend)
-    agent = ForgeAgent(harness, index, definition)
+    agent = ForgeAgent(harness, index, definition_obj)
 
     eval_path = run_dir / "evalset.jsonl"
     if not eval_path.exists():
@@ -293,14 +298,21 @@ def evaluate(
                     c_note = case_by_id[c.id].notes or ""
                     case_by_id[c.id].notes = (c_note + " | " if c_note else "") + note
 
-    scorecard = build_scorecard(results, cases, iteration=definition.iteration)
-    (run_dir / "results.jsonl").write_text(
-        "\n".join(r.model_dump_json() for r in results), encoding="utf-8")
-    (run_dir / "scorecard.json").write_text(scorecard.model_dump_json(indent=2), encoding="utf-8")
-    (run_dir / "ledger.json").write_text(
-        harness.ledger.model_dump_json(indent=2), encoding="utf-8")
+    scorecard = build_scorecard(results, cases, iteration=definition_obj.iteration)
+    if definition is not None:
+        out_prefix = definition.parent.name
+        (run_dir / f"results_{out_prefix}.jsonl").write_text(
+            "\n".join(r.model_dump_json() for r in results), encoding="utf-8")
+        (run_dir / f"scorecard_{out_prefix}.json").write_text(
+            scorecard.model_dump_json(indent=2), encoding="utf-8")
+    else:
+        (run_dir / "results.jsonl").write_text(
+            "\n".join(r.model_dump_json() for r in results), encoding="utf-8")
+        (run_dir / "scorecard.json").write_text(scorecard.model_dump_json(indent=2), encoding="utf-8")
+        (run_dir / "ledger.json").write_text(
+            harness.ledger.model_dump_json(indent=2), encoding="utf-8")
 
-    table = Table(title=f"Scorecard — {definition.name} (iteration {definition.iteration})")
+    table = Table(title=f"Scorecard — {definition_obj.name} (iteration {definition_obj.iteration})")
     for col in ("passed", "total", "score", "95% CI", "top failures"):
         table.add_column(col, justify="center")
     top_fail = ", ".join(f"{k}:{v}" for k, v in sorted(scorecard.by_failure.items(),
@@ -413,6 +425,19 @@ def report(run_dir: Path = typer.Argument(..., help="Run folder")) -> None:
     out = run_dir / "report.md"
     out.write_text(text, encoding="utf-8")
     console.print(f"[green]report written:[/green] {out} ({len(text)} chars)")
+
+
+@app.command()
+def regression(
+    run_dir: Path = typer.Argument(..., help="Run folder with definition + evalset"),
+    docs: Path = typer.Option(..., "--docs", help="Document folder (current state)"),
+) -> None:
+    """Docs changed? Re-run the old eval set, report regressions and recoveries."""
+    from .regression import run_regression
+
+    text = run_regression(run_dir, docs)
+    console.print(f"[green]regression report written:[/green] {run_dir}/regression/regression.md "
+                  f"({len(text)} chars)")
 
 
 if __name__ == "__main__":

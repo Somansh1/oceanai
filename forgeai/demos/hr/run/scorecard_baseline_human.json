@@ -1,0 +1,17 @@
+{
+  "iteration": 0,
+  "total": 14,
+  "passed": 10,
+  "score": 0.7143,
+  "wilson_low": 0.4535,
+  "wilson_high": 0.8828,
+  "by_class": {
+    "rephrase_a": 1,
+    "answerable": 2,
+    "canary": 1
+  },
+  "by_failure": {
+    "hallucination": 3,
+    "prompt_defect": 1
+  }
+}
