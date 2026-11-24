@@ -9,8 +9,7 @@ surgical patches, and ships a runnable agent plus an honest quality report.
 > Core thesis: **never ask a small model for an opinion — ask it a thousand
 > yes/no questions and let code add up the answers.**
 
-Built for the OceanAI Jr. GenAI Engineer assignment. Everything runs
-local-first on a 7B open model (Ollama, `qwen2.5:7b-instruct`) — no cloud
+Everything runs local-first on a 7B open model (Ollama, `qwen2.5:7b-instruct`) — no cloud
 dependencies in the factory itself.
 
 ## Quickstart
@@ -47,45 +46,73 @@ streamlit run ui/app.py
 
 ## Architecture
 
-```
-  brief + docs ─▶ 1. INTAKE INTERVIEWER ─▶ 2. GROUNDABILITY MAP ─▶ REQUIREMENTS
-                   (≤5 questions, each       (topic × evidence matrix;      (typed doc:
-                    tagged with the build     unsupported topics get         scope, refuse
-                    decision it resolves;     rewritten to must-refuse;      list, topics)
-                    --auto: assumptions       synonym classes + tools-
-                    logged, never blocks)     extend-groundability)
-                                                                 │
-                                                                 ▼
-  docs ─────────▶ 3. AGENT GENERATOR ─▶ AGENT DEFINITION (declarative JSON:
-                   (3 prompt candidates      prompt, retrieval params,
-                    → tournament on pilot,    tool bindings + rejections,
-                    tool selection w/         output contract)
-                    keyword-rule enforcement,
-                    explicit rejections)
-                                                                 │
-                                                                 ▼
-  docs ─────────▶ 4. EVAL COMPILER ─▶ EVAL SET (answerable w/ expected chunk
-                   (stratified per-chunk      IDs + atomic facts / refusals /
-                   archetypes, canaries,      canaries / edges / rephrase
-                   answerability gates,       pairs)
-                   fact self-verification)
-                                                                 │
-                                                                 ▼
-  docs ─────────▶ 5. JUDGE (layered) ─▶ L0 deterministic: citation IDs validated
-                                │      against the index, refusals are schema
-                                │      fields, numbers recomputed, day↔hour
-                                │      transforms; L1 micro-binary: one yes/no
-                                │      per (fact, answer) pair; scoping
-                                ▼      statements accepted as claims-of-absence
-                   6. CRITIC-OPTIMIZER (max 3 iters, patient early-stop)
-                      failure class DERIVED from telemetry ->
-                      ONE surgical patch (versioned prompt section or
-                      retrieval knob) -> re-eval -> logged delta
-                                                                 │
-                                                                 ▼
-                   7. REPORT (scorecard w/ Wilson CIs, iteration table,
-                              what-still-fails-and-why, cost ledger,
-                              groundability overrides visible)
+```mermaid
+flowchart TD
+    classDef inputStyle fill:#1e293b,stroke:#0284c7,stroke-width:1.5px,color:#f8fafc;
+    classDef stageStyle fill:#0f172a,stroke:#334155,stroke-width:1.5px,color:#f8fafc;
+    classDef docStyle fill:#1e293b,stroke:#475569,stroke-width:1px,color:#cbd5e1;
+    classDef outputStyle fill:#0284c7,stroke:#38bdf8,stroke-width:2px,color:#ffffff;
+    classDef judgeStyle fill:#162032,stroke:#0ea5e9,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph Inputs["1. Specification and Grounding"]
+        direction TB
+        BR["Unstructured Paragraph Brief"]:::inputStyle
+        DOCS["Document Corpus (PDF, CSV, MD, DOCX)"]:::inputStyle
+        II["1. Intake Interviewer<br/>(<= 5 questions, tagged decisions, --auto)"]:::stageStyle
+        GG["2. Groundability Guard<br/>(Topic x Evidence Density Matrix)"]:::stageStyle
+        REQ["Requirements Document<br/>(Scopes, Tone, Must-Refuse List)"]:::docStyle
+
+        BR --> II
+        DOCS --> II
+        DOCS --> GG
+        II --> GG
+        GG --> REQ
+    end
+
+    subgraph Synthesis["2. Synthesis and Binding"]
+        direction TB
+        AG["3. Agent Generator<br/>(Prompt Tournament on Pilot)"]:::stageStyle
+        TB["Keyword Tool Selector<br/>(Enforced bindings + logged rejections)"]:::stageStyle
+        AD["Agent Definition<br/>(System Prompt, Retrieval Knobs, Output Contract)"]:::docStyle
+
+        REQ --> AG
+        DOCS --> AG
+        AG --> TB
+        TB --> AD
+    end
+
+    subgraph EvalAndJudge["3. Adversarial Quality Gate"]
+        direction TB
+        EC["4. Eval Compiler<br/>(Stratified Archetypes, Canaries, Pairs)"]:::stageStyle
+        ES["Adversarial Eval Set<br/>(Self-verified Chunk Facts)"]:::docStyle
+        LJ["5. Layered Multi-Tier Judge"]:::judgeStyle
+        L0["L0 Deterministic Verification<br/>(Citations in Index, Schemas, Derivations)"]:::judgeStyle
+        L1["L1 Micro-Binary Verification<br/>(Atomic Fact Entailment)"]:::judgeStyle
+
+        DOCS --> EC
+        EC --> ES
+        AD --> LJ
+        ES --> LJ
+        LJ --> L0
+        LJ --> L1
+    end
+
+    subgraph Optimization["4. Critic-Optimizer and Delivery"]
+        direction TB
+        CO["6. Critic-Optimizer Loop<br/>(Telemetry Triage, Surgical Patches)"]:::stageStyle
+        HR["7. Honest Quality Report<br/>(Wilson CIs, Triage, Failure Postmortem)"]:::outputStyle
+        RUN["8. Runnable Shipped Agent<br/>(CLI and Streamlit Dashboard)"]:::outputStyle
+
+        L0 --> CO
+        L1 --> CO
+        CO -- "Pass Rate Below Target (max 3 iters)" --> AG
+        CO -- "Converged or Budget Exhausted" --> HR
+        AD --> RUN
+    end
+
+    Inputs --> Synthesis
+    Synthesis --> EvalAndJudge
+    EvalAndJudge --> Optimization
 ```
 
 ## Design principles
@@ -109,21 +136,30 @@ streamlit run ui/app.py
 6. **Honesty is a feature.** Wilson intervals, per-class failure taxonomy,
    unexplained-failure list, cost ledger. The report explains its number.
 
-## The two demos (committed in full)
+## The three committed runs
 
-| | Run A — ShoreHR | Run B — PortOps (marine) |
-|---|---|---|
-| corpus | HR policy doc | berth-schedule CSV + bunker CSV + tariff doc |
-| tools attached | 0 (all 4 rejected, reasons logged) | all 4 (incl. live open-meteo marine) |
-| score | **86% [60–96%]** | **61% [39–80%]** |
-| hardness | factual coverage | multi-step arithmetic + date-scoped lookups |
+| | Run A — ShoreHR | Run B — PortOps (marine) | Cold Run — Library (unseen) |
+|---|---|---|---|
+| corpus | HR policy doc | berth-schedule CSV + bunker CSV + tariff doc | library lending rules doc |
+| tools attached | 0 (all 4 rejected, reasons logged) | all 4 (incl. live open-meteo marine) | 0 (all tools rejected) |
+| score | **86% [60–96%]** | **61% [39–80%]** | **79% [57–91%]** |
+| hardness | factual coverage | multi-step arithmetic + date-scoped lookups | borrowing limits + sanctions |
 
 Run B is deliberately harder — the contrast is the evidence of generality.
-Both reports (`demos/*/run/report.md`) state what still fails and why.
+Library was an unseen domain tested to verify that the factory builds unattended without tuning.
+All three reports (`demos/*/run/report.md`) state what still fails and why.
 
 **Factory vs human baseline** (stretch goal): a hand-written agent evaluated
 on the same set and judge scored **71% [45–88%]** vs the factory's 86% —
 see `demos/hr/baseline_human/` with method and self-preference disclosure.
+
+## Testing
+
+Run the automated test suite with:
+
+```bash
+python -m pytest tests -v
+```
 
 ## What the factory caught in itself (excerpt)
 
@@ -146,9 +182,11 @@ motivated its fix.
 
 ```
 src/forge/       intake, generate, evals, judge, critic, runner, tools, regression, report
+tests/           automated pytest suite (18 unit tests covering specs, tools, stats, ingest, BM25)
 prompts/         11 numbered generation prompts (committed, hash-referenced)
 demos/hr/        run A: full artifacts + human baseline + regression-ready
 demos/portops/   run B: full artifacts
+demos/library/   cold run: third unseen domain full artifacts
 demos/synth/     document synthesis intent
 ui/app.py        Streamlit: Factory / Runner / Evidence
 ```
