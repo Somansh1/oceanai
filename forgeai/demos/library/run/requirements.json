@@ -1,0 +1,109 @@
+{
+  "brief_verbatim": "I'm the front-desk supervisor at the Greystone University library. I need an assistant that answers student and staff questions about our lending rules: how many items each patron type can borrow and for how long, renewals, fines and when borrowing gets blocked, holds and recalls, and inter-library loans. It must only answer from our lending rules document, politely refuse anything about library room bookings, IT passwords, or archiving donations, and keep a plain, friendly tone for students.\n",
+  "agent_name": "Library Assistant",
+  "scope_in": [],
+  "scope_out": [],
+  "audience": "general staff",
+  "tone": "clear and neutral",
+  "must_answer_topics": [
+    "Loan Periods and Limits",
+    "Renewals",
+    "Fines and Fees",
+    "Holds and Recalls",
+    "Inter-Library Loans"
+  ],
+  "must_refuse_topics": [
+    "specific fines and fee amounts",
+    "specific scenarios or examples",
+    "process for blocking a patron's borrowing privileges",
+    "how to contact the library for further assistance",
+    "exceptions or special cases",
+    "library room bookings",
+    "IT passwords",
+    "archiving donations"
+  ],
+  "clarifying_questions": [],
+  "assumptions": [
+    {
+      "question": "Do you need the assistant to clarify specific fines and fee amounts?",
+      "decision_resolved": "output_format",
+      "assumed_answer": "Refuse to include specific amounts, only provide ranges or general descriptions.",
+      "basis": "conservative default (--auto)"
+    },
+    {
+      "question": "Are there any specific scenarios or examples you would like the assistant to include for clarity?",
+      "decision_resolved": "output_format",
+      "assumed_answer": "Provide general rules without specific examples.",
+      "basis": "conservative default (--auto)"
+    },
+    {
+      "question": "Do you need the assistant to explain the process for blocking a patron's borrowing privileges?",
+      "decision_resolved": "output_format",
+      "assumed_answer": "Refuse to include details on blocking borrowing privileges.",
+      "basis": "conservative default (--auto)"
+    },
+    {
+      "question": "Should the assistant include information on how to contact the library for further assistance?",
+      "decision_resolved": "output_format",
+      "assumed_answer": "Include a general statement directing users to the library's help desk for further assistance.",
+      "basis": "conservative default (--auto)"
+    },
+    {
+      "question": "Do you need the assistant to mention any exceptions or special cases within the lending rules?",
+      "decision_resolved": "output_format",
+      "assumed_answer": "Refuse to include exceptions or special cases.",
+      "basis": "conservative default (--auto)"
+    }
+  ],
+  "groundability": {
+    "rows": [
+      {
+        "topic": "Loan Periods and Limits",
+        "status": "supported",
+        "evidence_density": 0.333,
+        "supporting_chunk_ids": [
+          "d01#c000"
+        ],
+        "note": "The chunk directly addresses the topic of 'Loan Periods and Limits' by specifying the number of items and duration for different categories of borrowers (undergraduate, postgraduate, academic staff, a"
+      },
+      {
+        "topic": "Renewals",
+        "status": "supported",
+        "evidence_density": 0.5,
+        "supporting_chunk_ids": [
+          "d01#c000"
+        ],
+        "note": "Chunk d01#c000 contains information about the renewal process, which directly addresses the topic of renewals. It specifies the conditions under which items can be renewed and how renewals work, provi"
+      },
+      {
+        "topic": "Fines and Fees",
+        "status": "supported",
+        "evidence_density": 0.5,
+        "supporting_chunk_ids": [
+          "d01#c001"
+        ],
+        "note": "The chunk directly addresses fines and fees, providing specific details such as the fine rates for overdue items and lost items, which are relevant to the topic of 'Fines and Fees'."
+      },
+      {
+        "topic": "Holds and Recalls",
+        "status": "supported",
+        "evidence_density": 1.0,
+        "supporting_chunk_ids": [
+          "d01#c001"
+        ],
+        "note": "The chunk discusses holds and recalls, directly addressing the topic. It explains that patrons can place holds on loaned items and that the service desk holds returned items for 4 days. This provides "
+      },
+      {
+        "topic": "Inter-Library Loans",
+        "status": "supported",
+        "evidence_density": 0.667,
+        "supporting_chunk_ids": [
+          "d01#c001",
+          "d01#c002"
+        ],
+        "note": "Both chunk d01#c001 and chunk d01#c002 contain relevant information about inter-library loans, including the number of requests per patron, the cost, and the delivery time. These details provide evide"
+      }
+    ],
+    "rewritten_to_refusal": []
+  }
+}

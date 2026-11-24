@@ -1,0 +1,166 @@
+{
+  "entries": [
+    {
+      "scorecard": {
+        "iteration": 0,
+        "total": 19,
+        "passed": 15,
+        "score": 0.7895,
+        "wilson_low": 0.5667,
+        "wilson_high": 0.9149,
+        "by_class": {
+          "canary": 1,
+          "rephrase_a": 1,
+          "refusal": 1,
+          "answerable": 1
+        },
+        "by_failure": {
+          "hallucination": 3,
+          "prompt_defect": 1
+        }
+      },
+      "patches": [
+        {
+          "iteration": 0,
+          "failure_class": "hallucination",
+          "target": "system_prompt/retrieval",
+          "change": "appended 'Refusal discipline' section: refuse when the SPECIFIC fact is absent, even if the topic is covered",
+          "rationale": "dominant failure class hallucination (3 cases)",
+          "failure_ids": [
+            "q05",
+            "q14",
+            "q18"
+          ],
+          "score_before": 0.7895,
+          "score_after": 0.5789
+        }
+      ],
+      "note": ""
+    },
+    {
+      "scorecard": {
+        "iteration": 0,
+        "total": 19,
+        "passed": 11,
+        "score": 0.5789,
+        "wilson_low": 0.3628,
+        "wilson_high": 0.7686,
+        "by_class": {
+          "rephrase_b": 1,
+          "canary": 1,
+          "rephrase_a": 1,
+          "refusal": 2,
+          "answerable": 3
+        },
+        "by_failure": {
+          "prompt_defect": 3,
+          "hallucination": 5
+        }
+      },
+      "patches": [],
+      "note": "post-patch re-eval (78s)"
+    },
+    {
+      "scorecard": {
+        "iteration": 1,
+        "total": 19,
+        "passed": 11,
+        "score": 0.5789,
+        "wilson_low": 0.3628,
+        "wilson_high": 0.7686,
+        "by_class": {
+          "rephrase_b": 1,
+          "canary": 1,
+          "rephrase_a": 1,
+          "refusal": 2,
+          "answerable": 3
+        },
+        "by_failure": {
+          "prompt_defect": 3,
+          "hallucination": 5
+        }
+      },
+      "patches": [
+        {
+          "iteration": 1,
+          "failure_class": "prompt_defect",
+          "target": "system_prompt/retrieval",
+          "change": "appended 'Answer completeness' section: comparisons state both sides + difference; calculator mandatory for arithmetic",
+          "rationale": "dominant failure class prompt_defect (3 cases)",
+          "failure_ids": [
+            "q02",
+            "q11",
+            "q17"
+          ],
+          "score_before": 0.5789,
+          "score_after": 0.7895
+        }
+      ],
+      "note": ""
+    },
+    {
+      "scorecard": {
+        "iteration": 1,
+        "total": 19,
+        "passed": 15,
+        "score": 0.7895,
+        "wilson_low": 0.5667,
+        "wilson_high": 0.9149,
+        "by_class": {
+          "canary": 1,
+          "refusal": 2,
+          "answerable": 1
+        },
+        "by_failure": {
+          "hallucination": 4
+        }
+      },
+      "patches": [],
+      "note": "post-patch re-eval (90s)"
+    },
+    {
+      "scorecard": {
+        "iteration": 2,
+        "total": 19,
+        "passed": 14,
+        "score": 0.7368,
+        "wilson_low": 0.5121,
+        "wilson_high": 0.8819,
+        "by_class": {
+          "canary": 2,
+          "refusal": 2,
+          "answerable": 1
+        },
+        "by_failure": {
+          "hallucination": 5
+        }
+      },
+      "patches": [],
+      "note": "no patchable failure class remains (all already patched)"
+    }
+  ],
+  "tournament_log": [
+    {
+      "candidate": "candidate-1",
+      "pilot_score": 1.0,
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "candidate": "candidate-2",
+      "pilot_score": 0.8,
+      "passed": 4,
+      "total": 5
+    },
+    {
+      "candidate": "candidate-3",
+      "pilot_score": 0.8,
+      "passed": 4,
+      "total": 5
+    },
+    {
+      "note": "winner selected on pilot subset before iteration 0"
+    }
+  ],
+  "stopped_early": false
+}
