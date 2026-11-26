@@ -1,16 +1,16 @@
 # Factory Report — Library Assistant
 
-Produced by ForgeAI. Definition version 3, iteration 2.
+Produced by ForgeAI. Definition version 2, iteration 2.
 
 ## Requirements (as compiled by the factory)
 
 | topic | status | density | evidence | note |
 |---|---|---|---|---|
-| Loan Periods and Limits | supported | 0.33 | d01#c000 | The chunk directly addresses the topic of 'Loan Periods and Limits' by specifying the number of items and duration for d |
-| Renewals | supported | 0.50 | d01#c000 | Chunk d01#c000 contains information about the renewal process, which directly addresses the topic of renewals. It specif |
-| Fines and Fees | supported | 0.50 | d01#c001 | The chunk directly addresses fines and fees, providing specific details such as the fine rates for overdue items and los |
-| Holds and Recalls | supported | 1.00 | d01#c001 | The chunk discusses holds and recalls, directly addressing the topic. It explains that patrons can place holds on loaned |
-| Inter-Library Loans | supported | 0.67 | d01#c001, d01#c002 | Both chunk d01#c001 and chunk d01#c002 contain relevant information about inter-library loans, including the number of r |
+| Loan periods and limits | supported | 0.33 | d01#c000 | The chunk [d01#c000] directly addresses the topic of 'Loan periods and limits' by providing specific details on the numb |
+| Renewals | supported | 0.67 | d01#c000, d01#c001 | The chunks from both 'd01#c000' and 'd01#c001' contain information about the renewal process, which directly addresses t |
+| Fines and fees | supported | 0.33 | d01#c001 | Chunk d01#c001 directly addresses fines and fees, providing specific details about overdue fines, short-loan fees, lost  |
+| Holds and recalls | supported | 0.67 | d01#c000, d01#c001 | Both chunks [d01#c000] and [d01#c001] contain information about holds and recalls, specifically mentioning that items wi |
+| Inter-library loans | supported | 0.67 | d01#c001, d01#c002 | Both chunk d01#c001 and chunk d01#c002 contain information about inter-library loans, including the number of requests p |
 
 Auto-resolved assumptions: 5 (each logged in requirements.json).
 
@@ -27,8 +27,11 @@ Auto-resolved assumptions: 5 (each logged in requirements.json).
 
 | kind | cases |
 |---|---|
-| answerable | 8 |
-| canary | 3 |
+| ambiguous | 2 |
+| answerable | 7 |
+| canary | 1 |
+| cross_doc | 2 |
+| numeric | 1 |
 | refusal | 4 |
 | rephrase_a | 2 |
 | rephrase_b | 2 |
@@ -37,49 +40,67 @@ Auto-resolved assumptions: 5 (each logged in requirements.json).
 
 | iteration | score | patched class | change | Δ |
 |---|---|---|---|---|
-| iter 0 | 15/19 (79%) | hallucination | appended 'Refusal discipline' section: refuse when the SPECIFIC fact is absent, even if the topic is covered | 79% → 58% |
-| iter 0 | 11/19 (58%) | — | post-patch re-eval (78s) | — |
-| iter 1 | 11/19 (58%) | prompt_defect | appended 'Answer completeness' section: comparisons state both sides + difference; calculator mandatory for ar | 58% → 79% |
-| iter 1 | 15/19 (79%) | — | post-patch re-eval (90s) | — |
-| iter 2 | 14/19 (74%) | — | no patchable failure class remains (all already patched) | — |
+| iter 0 | 13/21 (62%) | hallucination | appended 'Refusal discipline' section: refuse when the SPECIFIC fact is absent, even if the topic is covered | 62% → 67% |
+| iter 1 | 14/21 (67%) | wrong_refusal | appended 'Answer when grounded' section: refuse only when no chunk addresses the specifics [ROLLED BACK: score | 67% → 57% |
+| iter 1 | 12/21 (57%) | — | post-patch re-eval rejected & rolled back (57s) | — |
+| iter 2 | 14/21 (67%) | — | no patchable failure class remains (all already patched) | — |
 
 ### Prompt tournament (pilot subset)
 
 | candidate | pilot score |
 |---|---|
-| candidate-1 | 100% |
-| candidate-2 | 80% |
-| candidate-3 | 80% |
+| candidate-1 | 40% |
+| candidate-2 | 60% |
+| candidate-3 | 40% |
 
 ## Final scorecard
 
 | passed | total | score | 95% CI |
 |---|---|---|---|
-| 14 | 19 | 74% | [51%, 88%] |
+| 14 | 21 | 67% | [45%, 83%] |
 
-## What still fails and why (5 cases)
+## What still fails and why (7 cases)
 
-| id | kind | class | question | telemetry |
+| id | kind | class | question | why |
 |---|---|---|---|---|
-| q03 | canary | hallucination | Can a borrower request an extension for a book from the Special Collections section if it  | cov=0.00 |
-| q05 | canary | hallucination | How does the library handle requests for extended loan periods for items in the Special Co | cov=0.00 |
-| q12 | refusal | hallucination | What is the process for extending the loan period for a rare book in the Special Collectio | cov=0.00 |
-| q14 | refusal | hallucination | What is the procedure for requesting a special exhibition item from the library's collecti | cov=0.00 |
-| q18 | answerable | hallucination | How many more items can a postgraduate student borrow compared to an undergraduate student | cov=0.00 |
+| q04 | numeric | wrong_refusal | What is the total fine for a standard item that is 16 days overdue? | cov=0.00 |
+| q05 | cross_doc | hallucination | What is the maximum number of days an external member can keep a borrowed item i | ungrounded claim; missed 1 fact(s): Loans can be renewed up to 3 times if no other patron has pl |
+| q12 | cross_doc | hallucination | What is the maximum fine a patron can incur for a lost short-loan item, and how  | ungrounded claim; missed 4 fact(s): Overdue standard items accrue fines of 30 pence per item per |
+| q14 | answerable | hallucination | How long can a patron keep a standard loan item before it starts accruing fines? | missed 1 fact(s): standard items accrue fines of 30 pence per item per day |
+| q16 | canary | hallucination | Can a patron request an extension for a loan if they have an outstanding fine th | answered instead of refusing |
+| q17 | answerable | hallucination | How many more items can a postgraduate student borrow compared to an undergradua | missed 2 fact(s): postgraduate students may borrow 12 items |
+| q20 | answerable | hallucination | How much does it cost to make two inter-library loan requests, considering the f | ungrounded claim; missed 1 fact(s): 2 requests per patron per month free of charge |
 
 ## How this was judged
 
-- **L0 deterministic**: citation IDs validated against the index; refusals read from the output contract (schema field, not prose); numeric answers recomputed by the calculator tool; retrieval telemetry recorded per case.
-- **L1 micro-binary**: every expected fact checked against the answer as a single YES/NO entailment call; coverage aggregated mechanically. No holistic opinions, no position/verbosity bias surface.
+- **L0 deterministic**: citation IDs validated against the index and retrieved context; refusals read from the output contract (schema field, not prose); numeric answers checked deterministically within 2% relative tolerance; retrieval telemetry recorded per case.
+- **L1 micro-binary**: every expected fact checked against the answer as a single YES/NO entailment call, plus answer groundedness verified against cited chunks and tool outputs; coverage aggregated mechanically without holistic scoring or position/verbosity ranking bias.
 - **Eval-set self-defense**: expected facts verified against their own grounding chunk at generation time; refusal/canary cases passed an answerability gate; near-duplicates dropped.
 
 ## Cost ledger
 
 | stage | calls | in tokens | out tokens |
 |---|---|---|---|
+| agent_answer | 177 | 136156 | 12133 |
+| eval_answerable | 15 | 9164 | 871 |
+| eval_canary | 12 | 7640 | 962 |
+| eval_edge | 8 | 4441 | 1042 |
+| eval_fact_verify | 26 | 9508 | 52 |
+| eval_refusal | 4 | 2478 | 281 |
+| eval_refusal_gate | 6 | 3329 | 12 |
+| eval_rephrase | 2 | 346 | 50 |
+| groundability | 5 | 3728 | 498 |
+| interview | 1 | 517 | 177 |
+| judge_grounded | 126 | 53483 | 252 |
+| judge_l1 | 127 | 31045 | 254 |
+| judge_pair | 4 | 766 | 8 |
+| judge_reframe | 65 | 25133 | 130 |
+| prompt_candidate | 3 | 1613 | 426 |
+| requirements | 2 | 1407 | 372 |
+| tool_selection | 1 | 693 | 85 |
 
-Total: 0 calls, 0 tokens, 0s model time.
+Total: 584 calls, 309052 tokens, 581s model time.
 
 ---
 
-*A factory that claims 100% is suspicious; this one explains its 74%.*
+*A factory that claims 100% is suspicious; this one explains its 67%.*

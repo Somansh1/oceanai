@@ -3,21 +3,24 @@ from __future__ import annotations
 
 from forge.critic.patches import (
     patch_completeness,
-    patch_grounding,
-    patch_over_refusal,
     patch_refusal_posture,
     patch_retrieval,
 )
-from forge.spec import AgentDefinition, OutputContract, RetrievalConfig
+from forge.spec import AgentDefinition, OutputContract, RetrievalConfig, ToolBinding
 
 
-def _make_defn() -> AgentDefinition:
+def _make_defn(with_calculator: bool = False) -> AgentDefinition:
+    tools = (
+        [ToolBinding(name="calculator", justification="math", invoked_when="math")]
+        if with_calculator
+        else []
+    )
     return AgentDefinition(
         name="CandidateAgent",
         system_prompt="Base system prompt instructions.",
         requirements_digest="Scope: test requirements; tone: neutral",
         retrieval=RetrievalConfig(top_k_dense=4, top_k_sparse=6),
-        tools=[],
+        tools=tools,
         output_contract=OutputContract(),
     )
 
@@ -30,11 +33,17 @@ def test_patch_refusal_posture():
 
 
 def test_patch_completeness():
-    defn = _make_defn()
-    summary = patch_completeness(defn)
-    assert "Answer completeness" in defn.system_prompt
-    assert "calculator" in defn.system_prompt.lower()
-    assert "calculator" in summary.lower()
+    defn_no_calc = _make_defn(with_calculator=False)
+    summary_no = patch_completeness(defn_no_calc)
+    assert "Answer completeness" in defn_no_calc.system_prompt
+    assert "calculator" not in defn_no_calc.system_prompt.lower()
+    assert "calculator" not in summary_no.lower()
+
+    defn_calc = _make_defn(with_calculator=True)
+    summary_yes = patch_completeness(defn_calc)
+    assert "Answer completeness" in defn_calc.system_prompt
+    assert "calculator" in defn_calc.system_prompt.lower()
+    assert "calculator" in summary_yes.lower()
 
 
 def test_patch_retrieval_increases_top_k():

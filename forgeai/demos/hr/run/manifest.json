@@ -1,0 +1,33 @@
+{
+  "run_id": "run",
+  "created_at": "2026-11-26T15:08:02.572510+00:00",
+  "brief_sha": "e0360686fc0889a5f799ed3693d80fca7e946660d1dd2c11c9331cb5ba422ff4",
+  "docs": [
+    {
+      "filename": "hr_leave_policy.md",
+      "sha256": "b6282633a0b66ea407082ade85cb1330abc6f8ebd480fd3080c4f020d3e7300a",
+      "n_chunks": 3
+    }
+  ],
+  "model": "qwen2.5:7b-instruct",
+  "prompt_hashes": {
+    "01_intake_questions": "84e692e55b97addf8d0f6960ef1eff439fbe0466bfb5d4e906862e9d46830d7e",
+    "02_requirements_doc": "6c49e9f37ba6cdd7aa9a426409853d9cd75960240cab391062a68135aab4270e",
+    "03_groundability_topics": "bc81092048e2e96c28065409e1795e3f73beb79c61ff51590ed560a8926ebeef",
+    "04_system_prompt": "93ba6e1d98065fbb68d579c09e32a68a173de92b0575f176a8ebac14103c1fb0",
+    "05_eval_answerable": "8057ad0a11cdd6ac5dd4756268e740c29937892bc1f13b92b9436db6973cc327",
+    "06_eval_refusal": "91f8d186b17c11b48d2683b9d413ecba64a1abf5419d368f2643a8ef33cf0fa6",
+    "07_eval_edge": "a461122846cebcddbd100afbe18f9260b727dce859c665e0be4e5ff17b54e1e3",
+    "08_fact_match": "738a4f40c295fe51816f9bee1815a68480493918d5ec329a7528d6057aad22e0",
+    "09_claims_extract": "78e6d0265774b1c150bc33d8bb0407dee0fc49e69df3285189571c49a7746156",
+    "10_rephrase": "4272e0b32928ae672d4d9186507643a017f9e2d5ec7610065b02d1ec13fa5d4e",
+    "11_pair_consistency": "e6399cf91b294f034e88b37f2a694d42b7a3981293fbe8fe57cac15ee9396af4"
+  },
+  "config": {
+    "chunk_size": 900,
+    "overlap": 150,
+    "dense": true,
+    "auto": true
+  },
+  "degraded_modes": []
+}

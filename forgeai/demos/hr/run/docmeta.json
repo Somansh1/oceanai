@@ -1,0 +1,11 @@
+[
+  {
+    "doc_id": "d01",
+    "filename": "hr_leave_policy.md",
+    "source_path": "demos\\hr\\docs\\hr_leave_policy.md",
+    "sha256": "b6282633a0b66ea407082ade85cb1330abc6f8ebd480fd3080c4f020d3e7300a",
+    "kind": "md",
+    "n_chunks": 3,
+    "notes": "12 paragraphs, 0 tables"
+  }
+]

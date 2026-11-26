@@ -35,6 +35,7 @@ _SYNONYM_CLASSES = [
     {"leave", "vacation", "absence", "holiday"},
     {"vessel", "ship", "tanker", "craft"},
     {"schedule", "arrival", "eta", "berth", "berths"},
+    {"tug", "tugs", "towage"},
 ]
 
 # Tool capability map: tools extend groundability. Live-data topics have no
@@ -71,7 +72,7 @@ def _terms_present(terms: list[str], text: str) -> int:
 def _tool_backed(topic: str, attached: list[str]) -> str | None:
     low = topic.lower()
     for tool, kws in _TOOL_TOPICS.items():
-        if tool in attached and any(k in low for k in kws):
+        if tool in attached and any(re.search(rf"\b{re.escape(k)}\b", low) for k in kws):
             return tool
     return None
 
@@ -99,8 +100,14 @@ def _corroborate(topic: str, hits: list[tuple[str, float]], index: HybridIndex
         present = _terms_present(terms, low)
         need = max(2, -(-len(terms) * 3 // 5))
         if present >= min(need, len(terms)):
-            headings = [h.lower() for h in re.findall(r"^#{1,3}\s+(.+)$", chunk.text, flags=re.M)]
-            heading_hit = any(_terms_present(terms, h) > 0 for h in headings)
+            # Match headings at start-of-line OR after inline overlap concatenation
+            headings = [
+                h.lower()
+                for h in re.findall(r"(?:^|\s)#{1,3}\s+([^\n#]+)", chunk.text, flags=re.M)
+            ]
+            heading_hit = any(_terms_present(terms, h) > 0 for h in headings) or (
+                len(terms) >= 2 and present == len(terms)
+            )
             # quote a window around the first matched term
             first = next((s for t in terms for s in _expand(t) if s in low), terms[0])
             pos = low.find(first)
@@ -110,8 +117,18 @@ def _corroborate(topic: str, hits: list[tuple[str, float]], index: HybridIndex
     return None, None, False
 
 
+def _embed_query(harness: Harness, index: HybridIndex, text: str) -> list[float] | None:
+    if not index._dense_ready or not harness.backend.available():
+        return None
+    try:
+        return harness.backend.embed([text])[0]
+    except Exception:
+        return None
+
+
 def _probe_topic(harness: Harness, index: HybridIndex, topic: str) -> TopicCoverage:
-    hits = index.query(topic, top_k=5)
+    qvec = _embed_query(harness, index, topic)
+    hits = index.query(topic, vector=qvec, top_k=5)
     # full chunk text — truncating the probe context once hid the very evidence
     # being judged (sick-leave section sat past char 1000 of its chunk)
     retrieved_text = "\n\n---\n\n".join(

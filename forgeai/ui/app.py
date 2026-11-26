@@ -19,11 +19,10 @@ import streamlit.components.v1 as components
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from forge.core import Chunk  # noqa: E402
-from forge.llm import Harness, OllamaBackend  # noqa: E402
-from forge.retrieve import HybridIndex  # noqa: E402
-from forge.runner import ForgeAgent  # noqa: E402
-from forge.spec import AgentDefinition  # noqa: E402
+from forge.llm import Harness, OllamaBackend
+from forge.retrieve import HybridIndex
+from forge.runner import ForgeAgent
+from forge.spec import AgentDefinition, RequirementsDoc
 
 st.set_page_config(
     page_title="ForgeAI",
@@ -226,6 +225,7 @@ def _forge(*args: str) -> subprocess.CompletedProcess:
     py = sys.executable
     return subprocess.run(
         [py, "-m", "forge.cli", *args],
+        check=False,
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -243,8 +243,8 @@ def _load_chunks(run_dir: Path) -> dict[str, str]:
             try:
                 data = json.loads(line)
                 chunks[data.get("id", "")] = data.get("text", "")
-            except Exception:
-                pass
+            except json.JSONDecodeError:
+                continue
     return chunks
 
 
@@ -574,12 +574,12 @@ with tab_factory:
         "Document Folder Path", value=current_preset["docs"]
     )
 
-    fcol1, fcol2, fcol3 = st.columns(3)
+    fcol1, fcol2, fcol3, fcol4 = st.columns(4)
     with fcol1:
         auto_flag = st.checkbox(
             "Unattended mode (--auto)",
             value=True,
-            help="Resolve clarifying questions automatically with logged conservative assumptions.",
+            help="Uncheck to inspect and edit the compiled Requirements Document before final evaluation.",
         )
     with fcol2:
         tournament_flag = st.checkbox(
@@ -594,46 +594,103 @@ with tab_factory:
             max_value=5,
             value=3,
         )
+    with fcol4:
+        max_tokens_budget = st.number_input(
+            "Token Budget (0 = unlimited)",
+            min_value=0,
+            max_value=2_000_000,
+            value=0,
+            step=10_000,
+        )
 
-    out_folder = ROOT / "runs" / "studio_run"
+    run_name = st.text_input("Output Run Folder Name", value="studio_run")
+    out_folder = ROOT / "runs" / (run_name.strip() or "studio_run")
     ready = bool(brief_input.strip() and Path(docs_input).is_dir())
 
     if st.button("Synthesize Agent", type="primary", disabled=not ready):
         out_folder.mkdir(parents=True, exist_ok=True)
         brief_file = out_folder.parent / "studio_brief.md"
         brief_file.write_text(brief_input, encoding="utf-8")
+        st.session_state["studio_last_run"] = str(out_folder)
 
-        with st.status(
-            "Executing autonomous factory stages...", expanded=True
-        ) as status:
-            cmd_args = [
-                "build",
-                "--brief",
-                str(brief_file),
-                "--docs",
-                docs_input,
-                "--out",
-                str(out_folder),
-                "--auto" if auto_flag else "--interactive",
-            ]
-            st.write("Invoking Forge CLI build pipeline...")
-            res = _forge(*cmd_args)
-            if res.returncode == 0:
-                status.update(
-                    label="Agent synthesis successfully completed",
-                    state="complete",
+        if auto_flag:
+            with st.status("Executing autonomous full factory pipeline...", expanded=True) as status:
+                cmd_args = [
+                    "run",
+                    "--brief", str(brief_file),
+                    "--docs", docs_input,
+                    "--out", str(out_folder),
+                    "--auto",
+                    "--max-iterations", str(int(max_iters)),
+                ]
+                if not tournament_flag:
+                    cmd_args.append("--skip-tournament")
+                if int(max_tokens_budget) > 0:
+                    cmd_args.extend(["--max-tokens", str(int(max_tokens_budget))])
+                st.write("Running: forge " + " ".join(cmd_args))
+                res = _forge(*cmd_args)
+                if res.returncode == 0:
+                    status.update(label="Full factory pipeline completed", state="complete")
+                    st.success(f"Agent artifacts and report generated in {out_folder}")
+                else:
+                    status.update(label=f"Pipeline finished with code {res.returncode}", state="error")
+                    st.code(res.stderr or res.stdout)
+        else:
+            with st.status("Drafting requirements for human checkpoint...", expanded=True) as status:
+                res = _forge(
+                    "build",
+                    "--brief", str(brief_file),
+                    "--docs", docs_input,
+                    "--out", str(out_folder),
+                    "--auto",
                 )
-                st.success(f"Agent artifacts generated in {out_folder}")
-            else:
-                status.update(
-                    label=f"Build finished with code {res.returncode}",
-                    state="error",
-                )
-                st.code(res.stderr or res.stdout)
+                if res.returncode == 0:
+                    status.update(label="Requirements drafted — review & approve below", state="complete")
+                    st.session_state["studio_checkpoint_pending"] = str(out_folder)
+                else:
+                    status.update(label=f"Build failed with code {res.returncode}", state="error")
+                    st.code(res.stderr or res.stdout)
 
-        if (out_folder / "report.md").exists():
-            st.markdown("### Generated Factory Report")
-            st.markdown((out_folder / "report.md").read_text(encoding="utf-8"))
+    pending_dir = st.session_state.get("studio_checkpoint_pending")
+    if pending_dir and Path(pending_dir, "requirements.json").exists():
+        pdir = Path(pending_dir)
+        req_obj = RequirementsDoc.model_validate_json((pdir / "requirements.json").read_text(encoding="utf-8"))
+        st.markdown("### Human Checkpoint: Approve or Edit Requirements")
+        with st.form("req_checkpoint_form"):
+            ed_audience = st.text_input("Audience", value=req_obj.audience or "")
+            ed_tone = st.text_input("Tone", value=req_obj.tone or "")
+            ed_must_ans = st.text_area("Must-answer topics (one per line)", value="\n".join(req_obj.must_answer_topics))
+            ed_must_ref = st.text_area("Must-refuse topics (one per line)", value="\n".join(req_obj.must_refuse_topics))
+            approved = st.form_submit_button("Approve Requirements & Finish Factory Run")
+        if approved:
+            req_obj.audience = ed_audience.strip() or req_obj.audience
+            req_obj.tone = ed_tone.strip() or req_obj.tone
+            req_obj.must_answer_topics = [x.strip() for x in ed_must_ans.splitlines() if x.strip()]
+            req_obj.must_refuse_topics = [x.strip() for x in ed_must_ref.splitlines() if x.strip()]
+            req_path = pdir / "requirements.json"
+            req_path.write_text(req_obj.model_dump_json(indent=2), encoding="utf-8")
+            brief_file = out_folder.parent / "studio_brief.md"
+            with st.status("Regenerating from approved requirements and optimizing...", expanded=True) as status:
+                r1 = _forge("build", "--brief", str(brief_file), "--docs", docs_input, "--out", str(pdir), "--requirements", str(req_path))
+                r2 = _forge("evaluate", str(pdir), "--compile-only") if r1.returncode == 0 else r1
+                opt_args = ["optimize", str(pdir), "--max-iterations", str(int(max_iters))]
+                if not tournament_flag:
+                    opt_args.append("--skip-tournament")
+                if int(max_tokens_budget) > 0:
+                    opt_args.extend(["--max-tokens", str(int(max_tokens_budget))])
+                r3 = _forge(*opt_args) if r2.returncode == 0 else r2
+                r4 = _forge("report", str(pdir)) if r3.returncode == 0 else r3
+                if r4.returncode == 0:
+                    status.update(label="Approved build, optimization, and report completed", state="complete")
+                    st.session_state.pop("studio_checkpoint_pending", None)
+                else:
+                    status.update(label="Pipeline step failed", state="error")
+                    st.code(r4.stderr or r4.stdout)
+
+    show_dir = Path(st.session_state.get("studio_last_run", str(out_folder)))
+    if (show_dir / "report.md").exists():
+        st.markdown("### Generated Factory Report")
+        st.markdown((show_dir / "report.md").read_text(encoding="utf-8"))
 
 # ==================================================================== Tab 2
 with tab_runner:
@@ -730,7 +787,7 @@ with tab_runner:
                         )
                         index = HybridIndex(selected_run / "index.sqlite")
                         agent = ForgeAgent(
-                            Harness(OllamaBackend()), index, definition
+                            Harness(OllamaBackend()), index, definition, run_dir=selected_run
                         )
                         resp = agent.answer(query)
 
@@ -813,7 +870,13 @@ with tab_evidence:
 
         if (p / "ledger.json").exists():
             ledger = json.loads((p / "ledger.json").read_text(encoding="utf-8"))
-            totals = ledger.get("totals", {})
+            entries = ledger.get("entries", [])
+            totals = ledger.get("totals") or {
+                "calls": len(entries),
+                "in_tokens": sum(e.get("in_tokens", 0) for e in entries),
+                "out_tokens": sum(e.get("out_tokens", 0) for e in entries),
+                "latency_ms": sum(e.get("latency_ms", 0) for e in entries),
+            }
             with mcol3:
                 st.markdown(
                     f"<div class='kpi-card'><div class='kpi-label'>Model Calls</div><div class='kpi-value'>{totals.get('calls', 0)}</div><div class='kpi-caption'>{totals.get('latency_ms', 0) / 1000:.1f}s total latency</div></div>",
@@ -842,7 +905,7 @@ with tab_evidence:
                     f"""
                 <div class="kpi-card" style="border-left: 4px solid #10b981;">
                   <div class="kpi-label">Autonomous Factory Agent</div>
-                  <div class="kpi-value">{sc['score']:.0%} <span style="font-size:14px; color:#10b981;">(+{delta:.0%})</span></div>
+                  <div class="kpi-value">{sc['score']:.0%} <span style="font-size:14px; color:#10b981;">({delta:+.0%})</span></div>
                   <div class="kpi-caption">95% CI [{sc['wilson_low']:.0%}, {sc['wilson_high']:.0%}] | Passed {sc['passed']}/{sc['total']}</div>
                 </div>
                 """,
@@ -859,9 +922,15 @@ with tab_evidence:
                 """,
                     unsafe_allow_html=True,
                 )
-            st.caption(
-                "Human author missed specific policy lookups (sick leave certification thresholds, carryover limits) that exhaustive chunk coverage captured."
-            )
+            if (p / "results.jsonl").exists() and (p / "results_baseline_human.jsonl").exists():
+                fac_res = {r["case_id"]: r for r in (json.loads(l) for l in (p / "results.jsonl").read_text(encoding="utf-8").splitlines() if l.strip())}
+                hum_res = {r["case_id"]: r for r in (json.loads(l) for l in (p / "results_baseline_human.jsonl").read_text(encoding="utf-8").splitlines() if l.strip())}
+                beats = [k for k in fac_res if fac_res[k]["passed"] and not hum_res.get(k, {}).get("passed")]
+                loses = [k for k in fac_res if not fac_res[k]["passed"] and hum_res.get(k, {}).get("passed")]
+                st.caption(
+                    f"Factory beats human on {', '.join(beats) or 'none'}; "
+                    f"loses to human on {', '.join(loses) or 'none'}."
+                )
 
         if (p / "iterations.json").exists():
             st.markdown("### Optimization Iterations and Surgical Patches")
@@ -901,7 +970,7 @@ with tab_evidence:
                                 "Score Trajectory": "-",
                             }
                         )
-                st.dataframe(rows, use_container_width=True)
+                st.dataframe(rows, width="stretch")
 
         if (p / "report.md").exists():
             st.markdown("---")

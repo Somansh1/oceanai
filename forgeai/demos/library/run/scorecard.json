@@ -1,16 +1,19 @@
 {
   "iteration": 2,
-  "total": 19,
+  "total": 21,
   "passed": 14,
-  "score": 0.7368,
-  "wilson_low": 0.5121,
-  "wilson_high": 0.8819,
+  "score": 0.6667,
+  "wilson_low": 0.4537,
+  "wilson_high": 0.8281,
   "by_class": {
-    "canary": 2,
-    "refusal": 2,
-    "answerable": 1
+    "numeric": 1,
+    "cross_doc": 2,
+    "answerable": 3,
+    "canary": 1
   },
   "by_failure": {
-    "hallucination": 5
-  }
+    "wrong_refusal": 1,
+    "hallucination": 6
+  },
+  "unstable_pairs": 2
 }

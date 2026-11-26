@@ -39,13 +39,16 @@ class HybridIndex:
             self._chunks[chunk_id] = Chunk(id=chunk_id, text=text,
                                            kind=ChunkKind(kind), provenance=prov)
         self.bm25.build([r[0] for r in rows], [r[1] for r in rows])
-        if not self._vec_ext:
+        if self._vec_ext:
+            n = self.conn.execute("SELECT COUNT(*) FROM vec_chunks").fetchone()[0]
+            self._dense_ready = n > 0
+        else:
             n = self.conn.execute("SELECT COUNT(*) FROM vec_fallback").fetchone()[0]
             self._dense_ready = n > 0
 
     def _try_load_vec(self) -> bool:
         try:
-            import sqlite_vec  # noqa: F401
+            import sqlite_vec
             self.conn.enable_load_extension(True)
             sqlite_vec.load(self.conn)
             self.conn.enable_load_extension(False)
@@ -126,20 +129,21 @@ class HybridIndex:
         return scored[:top_k]
 
     def query(self, text: str, vector: list[float] | None = None, top_k: int = 6,
-              dense_k: int = 5, sparse_k: int = 8) -> list[tuple[str, float]]:
+              dense_k: int = 5, sparse_k: int = 8, rrf_k: int = RRF_K,
+              hybrid: bool = True, min_score: float = 0.0) -> list[tuple[str, float]]:
         """RRF fusion of sparse (+ dense when available). Returns [(chunk_id, rrf)]."""
         lists: list[list[str]] = []
         sparse = [cid for cid, _ in self.bm25.query(text, top_k=sparse_k)]
         if sparse:
             lists.append(sparse)
-        if vector is not None and self._dense_ready:
+        if hybrid and vector is not None and self._dense_ready:
             lists.append([cid for cid, _ in self._dense_query(vector, dense_k)])
         fused: dict[str, float] = {}
         for ranked in lists:
             for rank, cid in enumerate(ranked):
-                fused[cid] = fused.get(cid, 0.0) + 1.0 / (RRF_K + rank + 1)
-        out = sorted(fused.items(), key=lambda kv: kv[1], reverse=True)[:top_k]
-        return out
+                fused[cid] = fused.get(cid, 0.0) + 1.0 / (rrf_k + rank + 1)
+        items = [(cid, score) for cid, score in fused.items() if score >= min_score]
+        return sorted(items, key=lambda kv: kv[1], reverse=True)[:top_k]
 
     def get_chunk(self, chunk_id: str) -> Chunk | None:
         return self._chunks.get(chunk_id)

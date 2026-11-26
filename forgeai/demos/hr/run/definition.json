@@ -1,39 +1,36 @@
 {
-  "name": "HR Department",
+  "name": "Leave Policy Advisor",
   "version": 2,
   "iteration": 1,
-  "system_prompt": "Role and audience: HR Department, general staff.  \nGrounding rule: answer ONLY from the retrieved context chunks provided; if the chunks do not contain the answer, set refused=true and say so plainly.  \nOutput contract: respond ONLY as JSON with fields {\"answer\": str, \"refused\": bool, \"citations\": [chunk ids], \"confidence\": 0..1}.  \nTool usage rules: open_meteo.  \nMust refuse: salary, pensions, sea-staff crewing rules. When refusing: citations MUST be an empty list, and the answer must use the refusal template wording — never a bare \"Refused\".  \nStyle: clear and neutral tone.\n\n## Refusal discipline (v2)\nBefore answering, check: do the retrieved chunks contain the SPECIFIC fact asked for? If the question asks for a number, policy or rule and the chunks only discuss the general topic without that specific fact, set refused=true and use the refusal template. Never infer, generalize, or approximate an answer from nearby information. Guessing is worse than refusing.",
-  "requirements_digest": "{\n \"agent_name\": \"HR Department\",\n \"scope_in\": [],\n \"scope_out\": [],\n \"must_answer\": [\n  \"Annual Leave Entitlement\",\n  \"Sick Leave\",\n  \"Parental Leave\",\n  \"Unpaid Leave and Sabbatical\",\n  \"Public Holidays\"\n ],\n \"must_refuse\": [\n  \"salary\",\n  \"pensions\",\n  \"sea-staff crewing rules\"\n ],\n \"audience\": \"general staff\",\n \"tone\": \"clear and neutral\"\n}",
+  "system_prompt": "Role and audience: Leave Policy Advisor for general staff.  \nGrounding rule: answer ONLY from the retrieved context chunks provided; if the chunks do not contain the answer, set refused=true and say so plainly.  \nOutput contract: respond ONLY as JSON with fields {\"answer\": str, \"refused\": bool, \"citations\": [chunk ids], \"confidence\": 0..1}.  \nTool usage rules: None.  \nRefusal policy for the must-refuse topics: When refusing, use the template \"Refused: [topic]\". citations MUST be an empty list, and the answer must use the refusal template wording — never a bare \"Refused\".  \nStyle: clear and neutral tone.\n\n## Refusal discipline (v2)\nBefore answering, check: do the retrieved chunks contain the SPECIFIC fact asked for? If the question asks for a number, policy or rule and the chunks only discuss the general topic without that specific fact, set refused=true and use the refusal template. Never infer, generalize, or approximate an answer from nearby information. Guessing is worse than refusing.",
+  "requirements_digest": "{\n \"agent_name\": \"Leave Policy Advisor\",\n \"scope_in\": [\n  \"Annual leave entitlement for shore-based staff\",\n  \"Sick leave rules\",\n  \"Parental leave entitlements\",\n  \"Unpaid leave and sabbatical policies\"\n ],\n \"scope_out\": [\n  \"Salary information\",\n  \"Pension details\",\n  \"Sea-staff crewing rules\",\n  \"Leave request process\",\n  \"Consequences of not taking all annual leave days\"\n ],\n \"must_answer\": [\n  \"Annual Leave Entitlement\",\n  \"Sick Leave\",\n  \"Parental Leave\",\n  \"Unpaid Leave and Sabbatical\"\n ],\n \"must_refuse\": [\n  \"Salary information\",\n  \"Pension details\",\n  \"Sea-staff crewing rules\",\n  \"Leave request process\",\n  \"Consequences of not taking all annual leave days\"\n ],\n \"audience\": \"general staff\",\n \"tone\": \"clear and neutral\"\n}",
   "retrieval": {
     "chunk_size": 900,
     "chunk_overlap": 150,
-    "top_k_dense": 5,
-    "top_k_sparse": 8,
+    "top_k_dense": 3,
+    "top_k_sparse": 3,
     "rrf_k": 60,
     "hybrid": true,
     "query_rewrite": false,
     "min_score": 0.0
   },
-  "tools": [
-    {
-      "name": "open_meteo",
-      "justification": "ENFORCED — brief keyword rule matched 'wind'; rejected by selector",
-      "invoked_when": "when a question requires it",
-      "config": {}
-    }
-  ],
+  "tools": [],
   "rejected_tools": [
     {
       "name": "csv_lookup",
-      "reason": "No CSV file is needed for the HR policy questions."
+      "reason": "Not relevant to the HR leave policy documents."
     },
     {
       "name": "calculator",
-      "reason": "No arithmetic calculations are required for the HR policy questions."
+      "reason": "No arithmetic calculations are needed for the leave policies."
     },
     {
       "name": "now",
-      "reason": "The current date and time are not relevant to answering HR policy questions."
+      "reason": "Current date and time are not required for answering leave policy questions."
+    },
+    {
+      "name": "open_meteo",
+      "reason": "Weather information is not relevant to the leave policies."
     }
   ],
   "output_contract": {
@@ -66,9 +63,11 @@
   },
   "refusal_policy": {
     "must_refuse_topics": [
-      "salary",
-      "pensions",
-      "sea-staff crewing rules"
+      "Salary information",
+      "Pension details",
+      "Sea-staff crewing rules",
+      "Leave request process",
+      "Consequences of not taking all annual leave days"
     ],
     "refusal_template": "I don't have grounded information about {topic} in the provided documents. I can help with topics covered there.",
     "over_refusal_guard": null

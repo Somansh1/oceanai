@@ -1,0 +1,11 @@
+[
+  {
+    "doc_id": "d01",
+    "filename": "lending_rules.md",
+    "source_path": "demos\\library\\docs\\lending_rules.md",
+    "sha256": "9b51da2b68a52a6c4829b532feccbeb9c0c2e281843a589c85c5c03ef99598ad",
+    "kind": "md",
+    "n_chunks": 3,
+    "notes": "13 paragraphs, 0 tables"
+  }
+]

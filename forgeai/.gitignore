@@ -10,6 +10,8 @@ dist/
 # run outputs are committed deliberately (they are the evidence) except scratch
 runs/scratch/
 *.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
 .DS_Store
 # local logs / test fixtures
 *.log

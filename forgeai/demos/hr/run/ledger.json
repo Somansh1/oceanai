@@ -1,1514 +1,994 @@
 {
   "entries": [
     {
-      "stage": "tool_loop",
+      "stage": "interview",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "84e692e55b97addf",
+      "in_tokens": 521,
+      "out_tokens": 287,
+      "latency_ms": 7465
+    },
+    {
+      "stage": "requirements",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "6c49e9f37ba6cdd7",
+      "in_tokens": 949,
+      "out_tokens": 311,
+      "latency_ms": 5091
+    },
+    {
+      "stage": "requirements",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "6c49e9f37ba6cdd7",
+      "in_tokens": 678,
+      "out_tokens": 188,
+      "latency_ms": 3431
+    },
+    {
+      "stage": "tool_selection",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 651,
+      "in_tokens": 717,
+      "out_tokens": 186,
+      "latency_ms": 3620
+    },
+    {
+      "stage": "groundability",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "bc81092048e2e96c",
+      "in_tokens": 739,
+      "out_tokens": 78,
+      "latency_ms": 1681
+    },
+    {
+      "stage": "groundability",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "bc81092048e2e96c",
+      "in_tokens": 738,
+      "out_tokens": 122,
+      "latency_ms": 2478
+    },
+    {
+      "stage": "groundability",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "bc81092048e2e96c",
+      "in_tokens": 738,
+      "out_tokens": 78,
+      "latency_ms": 1755
+    },
+    {
+      "stage": "groundability",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "bc81092048e2e96c",
+      "in_tokens": 741,
+      "out_tokens": 105,
+      "latency_ms": 2299
+    },
+    {
+      "stage": "prompt_candidate",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "93ba6e1d98065fbb",
+      "in_tokens": 556,
+      "out_tokens": 154,
+      "latency_ms": 3372
+    },
+    {
+      "stage": "prompt_candidate",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "93ba6e1d98065fbb",
+      "in_tokens": 558,
+      "out_tokens": 158,
+      "latency_ms": 3332
+    },
+    {
+      "stage": "prompt_candidate",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "93ba6e1d98065fbb",
+      "in_tokens": 559,
+      "out_tokens": 144,
+      "latency_ms": 3042
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 493,
+      "out_tokens": 52,
+      "latency_ms": 1337
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 312,
+      "out_tokens": 2,
+      "latency_ms": 253
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 527,
+      "out_tokens": 55,
+      "latency_ms": 1427
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 321,
+      "out_tokens": 2,
+      "latency_ms": 171
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 549,
+      "out_tokens": 62,
+      "latency_ms": 1456
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 331,
+      "out_tokens": 2,
+      "latency_ms": 176
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 555,
+      "out_tokens": 62,
+      "latency_ms": 1548
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 311,
+      "out_tokens": 2,
+      "latency_ms": 182
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 310,
+      "out_tokens": 2,
+      "latency_ms": 142
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 575,
+      "out_tokens": 86,
+      "latency_ms": 2142
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 319,
+      "out_tokens": 2,
+      "latency_ms": 172
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 327,
+      "out_tokens": 2,
+      "latency_ms": 151
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 608,
+      "out_tokens": 69,
+      "latency_ms": 1712
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 332,
+      "out_tokens": 2,
+      "latency_ms": 215
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 621,
+      "out_tokens": 51,
+      "latency_ms": 1220
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 311,
+      "out_tokens": 2,
+      "latency_ms": 200
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 641,
+      "out_tokens": 58,
+      "latency_ms": 1549
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 648,
+      "out_tokens": 64,
+      "latency_ms": 1675
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 331,
+      "out_tokens": 2,
+      "latency_ms": 160
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 656,
+      "out_tokens": 50,
+      "latency_ms": 1437
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 662,
+      "out_tokens": 58,
+      "latency_ms": 1544
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 321,
+      "out_tokens": 2,
+      "latency_ms": 182
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 688,
+      "out_tokens": 62,
+      "latency_ms": 1617
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 675,
+      "out_tokens": 50,
+      "latency_ms": 1171
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 681,
+      "out_tokens": 64,
+      "latency_ms": 1536
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 688,
+      "out_tokens": 62,
+      "latency_ms": 1509
+    },
+    {
+      "stage": "eval_edge",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "a461122846cebcdd",
+      "in_tokens": 544,
+      "out_tokens": 108,
+      "latency_ms": 2999
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 209
+    },
+    {
+      "stage": "eval_edge",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "a461122846cebcdd",
+      "in_tokens": 540,
+      "out_tokens": 97,
+      "latency_ms": 2557
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 312,
+      "out_tokens": 2,
+      "latency_ms": 186
+    },
+    {
+      "stage": "eval_edge",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "a461122846cebcdd",
+      "in_tokens": 547,
+      "out_tokens": 176,
+      "latency_ms": 4702
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 528,
+      "out_tokens": 2,
+      "latency_ms": 328
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 471,
+      "out_tokens": 2,
+      "latency_ms": 225
+    },
+    {
+      "stage": "eval_edge",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "a461122846cebcdd",
+      "in_tokens": 540,
+      "out_tokens": 274,
+      "latency_ms": 7441
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 463,
+      "out_tokens": 2,
+      "latency_ms": 271
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 478,
+      "out_tokens": 2,
+      "latency_ms": 195
+    },
+    {
+      "stage": "eval_edge",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "a461122846cebcdd",
+      "in_tokens": 596,
+      "out_tokens": 161,
+      "latency_ms": 4730
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 323,
+      "out_tokens": 2,
+      "latency_ms": 205
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 318,
+      "out_tokens": 2,
+      "latency_ms": 187
+    },
+    {
+      "stage": "eval_edge",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "a461122846cebcdd",
+      "in_tokens": 613,
+      "out_tokens": 202,
+      "latency_ms": 5626
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 325,
+      "out_tokens": 2,
+      "latency_ms": 198
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 184
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 670,
+      "out_tokens": 69,
+      "latency_ms": 2243
+    },
+    {
+      "stage": "eval_refusal_gate",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 549,
+      "out_tokens": 2,
+      "latency_ms": 433
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 2005
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1986
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1845
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1907
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1832
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1960
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1835
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1875
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1965
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1901
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1860
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1980
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 1960
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 2010
+    },
+    {
+      "stage": "eval_refusal",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 679,
+      "out_tokens": 69,
+      "latency_ms": 2030
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 680,
+      "out_tokens": 80,
+      "latency_ms": 2572
+    },
+    {
+      "stage": "eval_refusal_gate",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 557,
+      "out_tokens": 2,
+      "latency_ms": 352
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 685,
+      "out_tokens": 74,
+      "latency_ms": 2454
+    },
+    {
+      "stage": "eval_refusal_gate",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 551,
+      "out_tokens": 2,
+      "latency_ms": 515
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 64,
+      "latency_ms": 2097
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 75,
+      "latency_ms": 2214
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 75,
+      "latency_ms": 2141
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 75,
+      "latency_ms": 2236
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 75,
+      "latency_ms": 2208
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 75,
+      "latency_ms": 2216
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 75,
+      "latency_ms": 2236
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 75,
+      "latency_ms": 2134
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 75,
+      "latency_ms": 2212
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 684,
+      "out_tokens": 75,
+      "latency_ms": 2320
+    },
+    {
+      "stage": "eval_rephrase",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "4272e0b32928ae67",
+      "in_tokens": 173,
+      "out_tokens": 26,
+      "latency_ms": 691
+    },
+    {
+      "stage": "eval_rephrase",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "4272e0b32928ae67",
+      "in_tokens": 173,
+      "out_tokens": 24,
+      "latency_ms": 730
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 842,
+      "out_tokens": 52,
+      "latency_ms": 1762
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 681,
+      "out_tokens": 68,
+      "latency_ms": 2180
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 681,
+      "out_tokens": 87,
+      "latency_ms": 2612
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 681,
+      "out_tokens": 87,
+      "latency_ms": 2389
+    },
+    {
+      "stage": "eval_canary",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "91f8d186b17c11b4",
+      "in_tokens": 681,
+      "out_tokens": 87,
+      "latency_ms": 2619
+    },
+    {
+      "stage": "eval_answerable",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "8057ad0a11cdd6ac",
+      "in_tokens": 848,
+      "out_tokens": 63,
+      "latency_ms": 2092
+    },
+    {
+      "stage": "eval_fact_verify",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 324,
+      "out_tokens": 2,
+      "latency_ms": 196
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 701,
+      "out_tokens": 43,
+      "latency_ms": 992
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 335,
+      "out_tokens": 2,
+      "latency_ms": 155
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 714,
+      "out_tokens": 134,
+      "latency_ms": 2684
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 300,
+      "out_tokens": 2,
+      "latency_ms": 146
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 591,
+      "out_tokens": 2,
+      "latency_ms": 295
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 716,
+      "out_tokens": 43,
+      "latency_ms": 1021
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 350,
+      "out_tokens": 2,
+      "latency_ms": 143
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 707,
+      "out_tokens": 31,
+      "latency_ms": 1174
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 709,
       "out_tokens": 149,
-      "latency_ms": 8574
+      "latency_ms": 3685
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 341,
+      "out_tokens": 2,
+      "latency_ms": 209
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 339,
+      "out_tokens": 2,
+      "latency_ms": 167
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 354,
+      "out_tokens": 2,
+      "latency_ms": 167
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 799,
-      "out_tokens": 35,
-      "latency_ms": 830
+      "in_tokens": 705,
+      "out_tokens": 43,
+      "latency_ms": 1456
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 335,
+      "out_tokens": 2,
+      "latency_ms": 92
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 799,
-      "out_tokens": 35,
-      "latency_ms": 551
+      "in_tokens": 718,
+      "out_tokens": 87,
+      "latency_ms": 2059
     },
     {
       "stage": "judge_l1",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 166,
+      "in_tokens": 253,
       "out_tokens": 2,
-      "latency_ms": 144
+      "latency_ms": 107
     },
     {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 52,
-      "latency_ms": 1003
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 703,
-      "out_tokens": 15,
-      "latency_ms": 284
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 703,
-      "out_tokens": 38,
-      "latency_ms": 830
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 703,
-      "out_tokens": 38,
-      "latency_ms": 591
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 469,
-      "out_tokens": 17,
-      "latency_ms": 498
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 537,
-      "out_tokens": 33,
-      "latency_ms": 757
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 537,
-      "out_tokens": 33,
-      "latency_ms": 527
-    },
-    {
-      "stage": "judge_l1",
+      "stage": "judge_grounded",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 172,
+      "in_tokens": 544,
       "out_tokens": 2,
-      "latency_ms": 100
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 132,
-      "latency_ms": 2160
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 715,
-      "out_tokens": 53,
-      "latency_ms": 873
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 715,
-      "out_tokens": 53,
-      "latency_ms": 845
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 650,
-      "out_tokens": 103,
-      "latency_ms": 1935
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 778,
-      "out_tokens": 49,
-      "latency_ms": 1142
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 778,
-      "out_tokens": 49,
-      "latency_ms": 775
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 651,
-      "out_tokens": 136,
-      "latency_ms": 2143
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 798,
-      "out_tokens": 35,
-      "latency_ms": 946
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 798,
-      "out_tokens": 35,
-      "latency_ms": 669
-    },
-    {
-      "stage": "judge_l1",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 166,
-      "out_tokens": 2,
-      "latency_ms": 110
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 52,
-      "latency_ms": 982
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 703,
-      "out_tokens": 15,
       "latency_ms": 280
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 701,
-      "out_tokens": 44,
-      "latency_ms": 983
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 701,
-      "out_tokens": 44,
-      "latency_ms": 733
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 469,
-      "out_tokens": 17,
-      "latency_ms": 498
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 535,
-      "out_tokens": 46,
-      "latency_ms": 995
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 535,
-      "out_tokens": 46,
-      "latency_ms": 770
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 132,
-      "latency_ms": 2537
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 713,
-      "out_tokens": 53,
-      "latency_ms": 1228
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 713,
-      "out_tokens": 55,
-      "latency_ms": 984
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 650,
-      "out_tokens": 137,
-      "latency_ms": 2538
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 777,
-      "out_tokens": 103,
-      "latency_ms": 2201
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 777,
-      "out_tokens": 104,
-      "latency_ms": 1928
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 651,
-      "out_tokens": 136,
-      "latency_ms": 2842
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 790,
+      "in_tokens": 720,
       "out_tokens": 33,
-      "latency_ms": 997
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 790,
-      "out_tokens": 33,
-      "latency_ms": 714
+      "latency_ms": 855
     },
     {
       "stage": "judge_l1",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 164,
-      "out_tokens": 2,
-      "latency_ms": 118
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 52,
-      "latency_ms": 1087
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 703,
-      "out_tokens": 15,
-      "latency_ms": 292
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 693,
-      "out_tokens": 38,
-      "latency_ms": 1159
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 693,
-      "out_tokens": 38,
-      "latency_ms": 731
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 469,
-      "out_tokens": 17,
-      "latency_ms": 330
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 527,
-      "out_tokens": 46,
-      "latency_ms": 1331
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 527,
-      "out_tokens": 46,
-      "latency_ms": 890
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 132,
-      "latency_ms": 2795
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 705,
-      "out_tokens": 53,
-      "latency_ms": 1187
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 705,
-      "out_tokens": 53,
-      "latency_ms": 1075
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 650,
-      "out_tokens": 137,
-      "latency_ms": 2958
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 769,
-      "out_tokens": 56,
-      "latency_ms": 1716
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 769,
-      "out_tokens": 56,
-      "latency_ms": 1347
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 651,
-      "out_tokens": 136,
-      "latency_ms": 3066
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 798,
-      "out_tokens": 35,
-      "latency_ms": 814
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 798,
-      "out_tokens": 35,
-      "latency_ms": 897
-    },
-    {
-      "stage": "judge_l1",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 166,
-      "out_tokens": 2,
-      "latency_ms": 126
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 132,
-      "latency_ms": 2974
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 713,
-      "out_tokens": 53,
-      "latency_ms": 1417
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 713,
-      "out_tokens": 55,
-      "latency_ms": 1195
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 52,
-      "latency_ms": 1263
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 703,
-      "out_tokens": 15,
-      "latency_ms": 340
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 701,
-      "out_tokens": 44,
-      "latency_ms": 843
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 701,
-      "out_tokens": 44,
-      "latency_ms": 911
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 469,
-      "out_tokens": 17,
-      "latency_ms": 401
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 535,
-      "out_tokens": 46,
-      "latency_ms": 1243
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 535,
-      "out_tokens": 46,
-      "latency_ms": 979
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 26,
-      "latency_ms": 1102
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 706,
-      "out_tokens": 50,
-      "latency_ms": 1519
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 706,
-      "out_tokens": 50,
-      "latency_ms": 1104
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 643,
-      "out_tokens": 57,
-      "latency_ms": 1853
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 748,
-      "out_tokens": 70,
-      "latency_ms": 2023
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 748,
-      "out_tokens": 70,
-      "latency_ms": 1686
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 642,
-      "out_tokens": 52,
-      "latency_ms": 1713
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 742,
-      "out_tokens": 35,
-      "latency_ms": 983
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 742,
-      "out_tokens": 35,
-      "latency_ms": 978
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 650,
-      "out_tokens": 137,
-      "latency_ms": 3406
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 777,
-      "out_tokens": 103,
-      "latency_ms": 3059
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 777,
-      "out_tokens": 104,
-      "latency_ms": 2625
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 647,
-      "out_tokens": 150,
-      "latency_ms": 4242
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 724,
-      "out_tokens": 49,
-      "latency_ms": 1650
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 724,
-      "out_tokens": 49,
-      "latency_ms": 1187
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 639,
-      "out_tokens": 54,
-      "latency_ms": 1816
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 737,
-      "out_tokens": 78,
-      "latency_ms": 2082
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 737,
-      "out_tokens": 78,
-      "latency_ms": 2016
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 640,
-      "out_tokens": 27,
-      "latency_ms": 1106
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 715,
-      "out_tokens": 38,
-      "latency_ms": 913
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 715,
-      "out_tokens": 38,
-      "latency_ms": 1043
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 640,
-      "out_tokens": 89,
-      "latency_ms": 2828
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 765,
-      "out_tokens": 53,
-      "latency_ms": 1715
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 765,
-      "out_tokens": 53,
-      "latency_ms": 1412
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 92,
-      "latency_ms": 2936
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 768,
-      "out_tokens": 94,
-      "latency_ms": 2834
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 768,
-      "out_tokens": 94,
-      "latency_ms": 2488
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 647,
-      "out_tokens": 322,
-      "latency_ms": 9248
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 790,
-      "out_tokens": 102,
-      "latency_ms": 2890
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 790,
-      "out_tokens": 102,
-      "latency_ms": 2868
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 651,
-      "out_tokens": 136,
-      "latency_ms": 3787
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 876,
-      "out_tokens": 33,
-      "latency_ms": 1472
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 876,
-      "out_tokens": 33,
-      "latency_ms": 831
-    },
-    {
-      "stage": "judge_l1",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 164,
-      "out_tokens": 2,
-      "latency_ms": 117
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 132,
-      "latency_ms": 3730
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 791,
-      "out_tokens": 53,
-      "latency_ms": 1376
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 791,
-      "out_tokens": 53,
-      "latency_ms": 1434
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 52,
-      "latency_ms": 1448
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 703,
-      "out_tokens": 15,
-      "latency_ms": 291
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 779,
-      "out_tokens": 38,
-      "latency_ms": 1475
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 779,
-      "out_tokens": 38,
-      "latency_ms": 1110
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 469,
-      "out_tokens": 17,
-      "latency_ms": 649
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 613,
-      "out_tokens": 33,
-      "latency_ms": 1052
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 613,
-      "out_tokens": 33,
-      "latency_ms": 956
-    },
-    {
-      "stage": "judge_l1",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 172,
-      "out_tokens": 2,
-      "latency_ms": 127
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 30,
-      "latency_ms": 667
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 788,
-      "out_tokens": 54,
-      "latency_ms": 1927
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 788,
-      "out_tokens": 54,
-      "latency_ms": 1432
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 643,
-      "out_tokens": 52,
-      "latency_ms": 1468
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 821,
-      "out_tokens": 65,
-      "latency_ms": 2069
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 821,
-      "out_tokens": 65,
-      "latency_ms": 1822
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 642,
-      "out_tokens": 52,
-      "latency_ms": 1434
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 820,
-      "out_tokens": 35,
-      "latency_ms": 1529
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 820,
-      "out_tokens": 35,
-      "latency_ms": 890
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 650,
-      "out_tokens": 137,
-      "latency_ms": 3990
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 855,
-      "out_tokens": 96,
-      "latency_ms": 3051
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 855,
-      "out_tokens": 99,
-      "latency_ms": 2810
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 647,
-      "out_tokens": 157,
-      "latency_ms": 4499
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 809,
-      "out_tokens": 65,
-      "latency_ms": 2168
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 809,
-      "out_tokens": 73,
-      "latency_ms": 2101
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 639,
-      "out_tokens": 69,
-      "latency_ms": 1975
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 830,
-      "out_tokens": 93,
-      "latency_ms": 2731
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 830,
-      "out_tokens": 93,
-      "latency_ms": 2589
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 640,
-      "out_tokens": 27,
-      "latency_ms": 611
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 793,
-      "out_tokens": 47,
-      "latency_ms": 1760
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 793,
-      "out_tokens": 47,
-      "latency_ms": 1329
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 640,
-      "out_tokens": 89,
-      "latency_ms": 2562
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 843,
-      "out_tokens": 54,
-      "latency_ms": 1995
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 843,
-      "out_tokens": 53,
-      "latency_ms": 1376
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 92,
-      "latency_ms": 2708
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 846,
-      "out_tokens": 89,
-      "latency_ms": 2869
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 846,
-      "out_tokens": 89,
-      "latency_ms": 2663
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 647,
-      "out_tokens": 372,
-      "latency_ms": 11097
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 868,
-      "out_tokens": 137,
-      "latency_ms": 4795
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 868,
-      "out_tokens": 137,
-      "latency_ms": 4086
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 651,
-      "out_tokens": 136,
-      "latency_ms": 4188
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 876,
-      "out_tokens": 33,
-      "latency_ms": 1510
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 876,
-      "out_tokens": 33,
-      "latency_ms": 838
-    },
-    {
-      "stage": "judge_l1",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 164,
+      "in_tokens": 205,
       "out_tokens": 2,
       "latency_ms": 130
     },
     {
-      "stage": "tool_loop",
+      "stage": "judge_grounded",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 132,
-      "latency_ms": 3812
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 342,
+      "out_tokens": 2,
+      "latency_ms": 189
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 791,
-      "out_tokens": 53,
-      "latency_ms": 1517
+      "in_tokens": 711,
+      "out_tokens": 25,
+      "latency_ms": 1219
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 791,
-      "out_tokens": 53,
-      "latency_ms": 1636
+      "in_tokens": 713,
+      "out_tokens": 140,
+      "latency_ms": 3909
     },
     {
-      "stage": "tool_loop",
+      "stage": "judge_reframe",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 52,
-      "latency_ms": 1581
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 341,
+      "out_tokens": 2,
+      "latency_ms": 94
     },
     {
-      "stage": "tool_loop",
+      "stage": "judge_reframe",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 703,
-      "out_tokens": 15,
-      "latency_ms": 271
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 339,
+      "out_tokens": 2,
+      "latency_ms": 188
     },
     {
-      "stage": "agent_answer",
+      "stage": "judge_reframe",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 779,
-      "out_tokens": 38,
-      "latency_ms": 1148
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 779,
-      "out_tokens": 38,
-      "latency_ms": 1040
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 469,
-      "out_tokens": 17,
-      "latency_ms": 475
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 345,
+      "out_tokens": 2,
+      "latency_ms": 176
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 613,
-      "out_tokens": 33,
-      "latency_ms": 1223
+      "in_tokens": 691,
+      "out_tokens": 43,
+      "latency_ms": 1626
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 335,
+      "out_tokens": 2,
+      "latency_ms": 87
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 613,
-      "out_tokens": 33,
-      "latency_ms": 825
+      "in_tokens": 704,
+      "out_tokens": 104,
+      "latency_ms": 2793
     },
     {
       "stage": "judge_l1",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 172,
+      "in_tokens": 270,
       "out_tokens": 2,
-      "latency_ms": 113
+      "latency_ms": 161
     },
     {
-      "stage": "tool_loop",
+      "stage": "judge_grounded",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 30,
-      "latency_ms": 1013
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 788,
-      "out_tokens": 54,
-      "latency_ms": 1798
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 561,
+      "out_tokens": 2,
+      "latency_ms": 283
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 788,
-      "out_tokens": 54,
-      "latency_ms": 1607
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 643,
-      "out_tokens": 52,
-      "latency_ms": 1335
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 821,
-      "out_tokens": 65,
-      "latency_ms": 2331
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 821,
-      "out_tokens": 65,
-      "latency_ms": 1901
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 642,
-      "out_tokens": 52,
-      "latency_ms": 1582
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 820,
-      "out_tokens": 35,
-      "latency_ms": 1315
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 820,
-      "out_tokens": 35,
-      "latency_ms": 1116
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 650,
-      "out_tokens": 137,
-      "latency_ms": 4097
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 855,
-      "out_tokens": 99,
-      "latency_ms": 3151
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 855,
-      "out_tokens": 99,
-      "latency_ms": 2962
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 647,
-      "out_tokens": 157,
-      "latency_ms": 4729
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 809,
-      "out_tokens": 64,
-      "latency_ms": 2128
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 809,
-      "out_tokens": 64,
-      "latency_ms": 1896
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 639,
-      "out_tokens": 69,
-      "latency_ms": 1833
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 830,
-      "out_tokens": 102,
-      "latency_ms": 3069
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 830,
-      "out_tokens": 93,
-      "latency_ms": 3216
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 640,
-      "out_tokens": 27,
-      "latency_ms": 721
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 793,
-      "out_tokens": 47,
-      "latency_ms": 1706
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 793,
-      "out_tokens": 47,
-      "latency_ms": 1739
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 640,
-      "out_tokens": 89,
-      "latency_ms": 3124
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 843,
-      "out_tokens": 54,
-      "latency_ms": 2131
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 843,
-      "out_tokens": 53,
-      "latency_ms": 1881
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 92,
-      "latency_ms": 3092
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 846,
-      "out_tokens": 89,
-      "latency_ms": 3267
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 846,
-      "out_tokens": 89,
-      "latency_ms": 2989
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 647,
-      "out_tokens": 372,
-      "latency_ms": 12038
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 868,
-      "out_tokens": 137,
-      "latency_ms": 4240
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 868,
-      "out_tokens": 137,
-      "latency_ms": 4007
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 651,
-      "out_tokens": 136,
-      "latency_ms": 3817
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 876,
-      "out_tokens": 33,
-      "latency_ms": 1232
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 876,
+      "in_tokens": 706,
       "out_tokens": 33,
       "latency_ms": 974
     },
@@ -1516,337 +996,1265 @@
       "stage": "judge_l1",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 164,
+      "in_tokens": 205,
       "out_tokens": 2,
-      "latency_ms": 104
+      "latency_ms": 99
     },
     {
-      "stage": "tool_loop",
+      "stage": "judge_grounded",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 132,
-      "latency_ms": 3722
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 791,
-      "out_tokens": 53,
-      "latency_ms": 1594
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 342,
+      "out_tokens": 2,
+      "latency_ms": 119
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 791,
-      "out_tokens": 53,
-      "latency_ms": 1534
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 52,
-      "latency_ms": 1542
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 703,
-      "out_tokens": 15,
-      "latency_ms": 331
+      "in_tokens": 697,
+      "out_tokens": 30,
+      "latency_ms": 1459
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 779,
-      "out_tokens": 38,
-      "latency_ms": 1179
+      "in_tokens": 699,
+      "out_tokens": 161,
+      "latency_ms": 4562
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 341,
+      "out_tokens": 2,
+      "latency_ms": 211
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 339,
+      "out_tokens": 2,
+      "latency_ms": 182
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 359,
+      "out_tokens": 2,
+      "latency_ms": 169
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 313,
+      "out_tokens": 2,
+      "latency_ms": 149
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 779,
-      "out_tokens": 38,
-      "latency_ms": 1239
+      "in_tokens": 691,
+      "out_tokens": 43,
+      "latency_ms": 1362
     },
     {
-      "stage": "tool_loop",
+      "stage": "judge_grounded",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 469,
-      "out_tokens": 17,
-      "latency_ms": 520
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 335,
+      "out_tokens": 2,
+      "latency_ms": 72
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 613,
+      "in_tokens": 704,
+      "out_tokens": 91,
+      "latency_ms": 2683
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 548,
+      "out_tokens": 2,
+      "latency_ms": 315
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 697,
+      "out_tokens": 30,
+      "latency_ms": 857
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 706,
       "out_tokens": 33,
-      "latency_ms": 923
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 613,
-      "out_tokens": 33,
-      "latency_ms": 971
+      "latency_ms": 924
     },
     {
       "stage": "judge_l1",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "738a4f40c295fe51",
-      "in_tokens": 172,
+      "in_tokens": 205,
+      "out_tokens": 2,
+      "latency_ms": 133
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 342,
+      "out_tokens": 2,
+      "latency_ms": 151
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 705,
+      "out_tokens": 73,
+      "latency_ms": 2646
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 300,
+      "out_tokens": 2,
+      "latency_ms": 111
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 243,
+      "out_tokens": 2,
+      "latency_ms": 105
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 393,
+      "out_tokens": 2,
+      "latency_ms": 160
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 699,
+      "out_tokens": 161,
+      "latency_ms": 5058
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 341,
+      "out_tokens": 2,
+      "latency_ms": 78
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 339,
+      "out_tokens": 2,
+      "latency_ms": 81
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 359,
+      "out_tokens": 2,
+      "latency_ms": 76
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 313,
+      "out_tokens": 2,
+      "latency_ms": 78
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 719,
+      "out_tokens": 85,
+      "latency_ms": 2650
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 287,
+      "out_tokens": 2,
+      "latency_ms": 188
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 419,
+      "out_tokens": 2,
+      "latency_ms": 230
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 693,
+      "out_tokens": 49,
+      "latency_ms": 1397
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 357,
+      "out_tokens": 2,
+      "latency_ms": 200
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 688,
+      "out_tokens": 34,
+      "latency_ms": 752
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 325,
+      "out_tokens": 2,
+      "latency_ms": 214
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 689,
+      "out_tokens": 43,
+      "latency_ms": 984
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 333,
+      "out_tokens": 2,
+      "latency_ms": 160
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 705,
+      "out_tokens": 46,
+      "latency_ms": 965
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 328,
+      "out_tokens": 2,
+      "latency_ms": 181
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 719,
+      "out_tokens": 63,
+      "latency_ms": 1501
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 253,
+      "out_tokens": 2,
+      "latency_ms": 117
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 529,
+      "out_tokens": 2,
+      "latency_ms": 264
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 688,
+      "out_tokens": 50,
+      "latency_ms": 1015
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 340,
+      "out_tokens": 2,
+      "latency_ms": 204
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 698,
+      "out_tokens": 49,
+      "latency_ms": 1293
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 230,
+      "out_tokens": 2,
+      "latency_ms": 125
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 362,
+      "out_tokens": 2,
+      "latency_ms": 167
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 689,
+      "out_tokens": 46,
+      "latency_ms": 1300
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 196
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 689,
+      "out_tokens": 46,
+      "latency_ms": 928
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 223
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 700,
+      "out_tokens": 80,
+      "latency_ms": 2029
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 395,
+      "out_tokens": 2,
+      "latency_ms": 240
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 695,
+      "out_tokens": 33,
+      "latency_ms": 819
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 200,
+      "out_tokens": 2,
+      "latency_ms": 119
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 337,
       "out_tokens": 2,
       "latency_ms": 134
     },
     {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 636,
-      "out_tokens": 30,
-      "latency_ms": 745
-    },
-    {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 788,
-      "out_tokens": 54,
-      "latency_ms": 1949
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 788,
-      "out_tokens": 54,
-      "latency_ms": 1433
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 643,
-      "out_tokens": 52,
-      "latency_ms": 1488
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 821,
-      "out_tokens": 65,
-      "latency_ms": 2196
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 821,
-      "out_tokens": 65,
-      "latency_ms": 1916
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 642,
-      "out_tokens": 52,
-      "latency_ms": 1457
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 820,
-      "out_tokens": 35,
-      "latency_ms": 1412
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 820,
-      "out_tokens": 35,
-      "latency_ms": 999
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 650,
-      "out_tokens": 137,
-      "latency_ms": 3949
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 855,
-      "out_tokens": 99,
-      "latency_ms": 3299
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 855,
-      "out_tokens": 99,
-      "latency_ms": 3112
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 647,
-      "out_tokens": 157,
-      "latency_ms": 4774
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 809,
-      "out_tokens": 64,
-      "latency_ms": 2445
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 809,
-      "out_tokens": 64,
-      "latency_ms": 1809
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 639,
-      "out_tokens": 69,
-      "latency_ms": 2070
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 830,
+      "in_tokens": 700,
       "out_tokens": 102,
-      "latency_ms": 3273
+      "latency_ms": 2582
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 408,
+      "out_tokens": 2,
+      "latency_ms": 248
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 830,
-      "out_tokens": 93,
-      "latency_ms": 2816
+      "in_tokens": 695,
+      "out_tokens": 32,
+      "latency_ms": 1084
     },
     {
-      "stage": "tool_loop",
+      "stage": "judge_l1",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 640,
-      "out_tokens": 27,
-      "latency_ms": 670
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 199,
+      "out_tokens": 2,
+      "latency_ms": 105
     },
     {
-      "stage": "agent_answer",
+      "stage": "judge_grounded",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 793,
-      "out_tokens": 47,
-      "latency_ms": 1557
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 793,
-      "out_tokens": 47,
-      "latency_ms": 1429
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 640,
-      "out_tokens": 89,
-      "latency_ms": 2700
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 206
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 843,
-      "out_tokens": 54,
-      "latency_ms": 2008
+      "in_tokens": 769,
+      "out_tokens": 43,
+      "latency_ms": 1521
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 335,
+      "out_tokens": 2,
+      "latency_ms": 212
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 843,
-      "out_tokens": 53,
-      "latency_ms": 1595
+      "in_tokens": 782,
+      "out_tokens": 100,
+      "latency_ms": 2565
     },
     {
-      "stage": "tool_loop",
+      "stage": "judge_grounded",
       "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 638,
-      "out_tokens": 92,
-      "latency_ms": 2820
-    },
-    {
-      "stage": "agent_answer",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 846,
-      "out_tokens": 89,
-      "latency_ms": 3057
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 558,
+      "out_tokens": 2,
+      "latency_ms": 293
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 846,
-      "out_tokens": 89,
-      "latency_ms": 2623
-    },
-    {
-      "stage": "tool_loop",
-      "model": "qwen2.5:7b-instruct",
-      "prompt_sha": "ad-hoc",
-      "in_tokens": 647,
-      "out_tokens": 372,
-      "latency_ms": 11497
+      "in_tokens": 775,
+      "out_tokens": 30,
+      "latency_ms": 1260
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 868,
-      "out_tokens": 137,
-      "latency_ms": 4519
+      "in_tokens": 784,
+      "out_tokens": 33,
+      "latency_ms": 1306
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 205,
+      "out_tokens": 2,
+      "latency_ms": 106
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 342,
+      "out_tokens": 2,
+      "latency_ms": 183
     },
     {
       "stage": "agent_answer",
       "model": "qwen2.5:7b-instruct",
       "prompt_sha": "ad-hoc",
-      "in_tokens": 868,
-      "out_tokens": 137,
-      "latency_ms": 4388
+      "in_tokens": 783,
+      "out_tokens": 32,
+      "latency_ms": 1045
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 260,
+      "out_tokens": 2,
+      "latency_ms": 197
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 203,
+      "out_tokens": 2,
+      "latency_ms": 94
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 353,
+      "out_tokens": 2,
+      "latency_ms": 121
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 777,
+      "out_tokens": 164,
+      "latency_ms": 4684
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 488,
+      "out_tokens": 2,
+      "latency_ms": 321
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 486,
+      "out_tokens": 2,
+      "latency_ms": 256
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 507,
+      "out_tokens": 2,
+      "latency_ms": 234
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 797,
+      "out_tokens": 79,
+      "latency_ms": 2484
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 281,
+      "out_tokens": 2,
+      "latency_ms": 178
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 413,
+      "out_tokens": 2,
+      "latency_ms": 223
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 771,
+      "out_tokens": 49,
+      "latency_ms": 1311
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 357,
+      "out_tokens": 2,
+      "latency_ms": 224
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 766,
+      "out_tokens": 34,
+      "latency_ms": 756
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 325,
+      "out_tokens": 2,
+      "latency_ms": 272
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 767,
+      "out_tokens": 43,
+      "latency_ms": 1437
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 333,
+      "out_tokens": 2,
+      "latency_ms": 211
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 783,
+      "out_tokens": 46,
+      "latency_ms": 1454
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 328,
+      "out_tokens": 2,
+      "latency_ms": 198
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 797,
+      "out_tokens": 71,
+      "latency_ms": 2097
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 261,
+      "out_tokens": 2,
+      "latency_ms": 201
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 537,
+      "out_tokens": 2,
+      "latency_ms": 359
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 766,
+      "out_tokens": 50,
+      "latency_ms": 1255
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 340,
+      "out_tokens": 2,
+      "latency_ms": 260
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 776,
+      "out_tokens": 32,
+      "latency_ms": 1024
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 214,
+      "out_tokens": 2,
+      "latency_ms": 120
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 346,
+      "out_tokens": 2,
+      "latency_ms": 201
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 767,
+      "out_tokens": 46,
+      "latency_ms": 1548
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 214
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 767,
+      "out_tokens": 46,
+      "latency_ms": 1234
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 193
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 778,
+      "out_tokens": 86,
+      "latency_ms": 2543
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 401,
+      "out_tokens": 2,
+      "latency_ms": 249
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 773,
+      "out_tokens": 33,
+      "latency_ms": 1145
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 200,
+      "out_tokens": 2,
+      "latency_ms": 135
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 337,
+      "out_tokens": 2,
+      "latency_ms": 168
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 778,
+      "out_tokens": 84,
+      "latency_ms": 2411
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 392,
+      "out_tokens": 2,
+      "latency_ms": 267
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 773,
+      "out_tokens": 32,
+      "latency_ms": 1144
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 199,
+      "out_tokens": 2,
+      "latency_ms": 107
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 187
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 769,
+      "out_tokens": 43,
+      "latency_ms": 1608
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 335,
+      "out_tokens": 2,
+      "latency_ms": 196
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 782,
+      "out_tokens": 100,
+      "latency_ms": 2947
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 558,
+      "out_tokens": 2,
+      "latency_ms": 106
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 775,
+      "out_tokens": 30,
+      "latency_ms": 1106
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 784,
+      "out_tokens": 33,
+      "latency_ms": 939
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 205,
+      "out_tokens": 2,
+      "latency_ms": 151
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 342,
+      "out_tokens": 2,
+      "latency_ms": 209
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 783,
+      "out_tokens": 32,
+      "latency_ms": 1364
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 260,
+      "out_tokens": 2,
+      "latency_ms": 146
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 203,
+      "out_tokens": 2,
+      "latency_ms": 97
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 353,
+      "out_tokens": 2,
+      "latency_ms": 161
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 777,
+      "out_tokens": 164,
+      "latency_ms": 4842
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 488,
+      "out_tokens": 2,
+      "latency_ms": 311
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 486,
+      "out_tokens": 2,
+      "latency_ms": 245
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 507,
+      "out_tokens": 2,
+      "latency_ms": 256
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 797,
+      "out_tokens": 79,
+      "latency_ms": 2697
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 281,
+      "out_tokens": 2,
+      "latency_ms": 179
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 413,
+      "out_tokens": 2,
+      "latency_ms": 235
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 771,
+      "out_tokens": 49,
+      "latency_ms": 1497
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 357,
+      "out_tokens": 2,
+      "latency_ms": 227
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 766,
+      "out_tokens": 34,
+      "latency_ms": 982
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 325,
+      "out_tokens": 2,
+      "latency_ms": 210
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 767,
+      "out_tokens": 43,
+      "latency_ms": 1379
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 333,
+      "out_tokens": 2,
+      "latency_ms": 224
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 783,
+      "out_tokens": 46,
+      "latency_ms": 1637
+    },
+    {
+      "stage": "judge_reframe",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 328,
+      "out_tokens": 2,
+      "latency_ms": 86
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 797,
+      "out_tokens": 71,
+      "latency_ms": 2298
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 261,
+      "out_tokens": 2,
+      "latency_ms": 168
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 537,
+      "out_tokens": 2,
+      "latency_ms": 311
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 766,
+      "out_tokens": 50,
+      "latency_ms": 1586
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 340,
+      "out_tokens": 2,
+      "latency_ms": 158
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 776,
+      "out_tokens": 32,
+      "latency_ms": 1317
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 214,
+      "out_tokens": 2,
+      "latency_ms": 99
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 346,
+      "out_tokens": 2,
+      "latency_ms": 174
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 767,
+      "out_tokens": 46,
+      "latency_ms": 1659
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 219
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 767,
+      "out_tokens": 46,
+      "latency_ms": 1430
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 230
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 778,
+      "out_tokens": 86,
+      "latency_ms": 2594
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 401,
+      "out_tokens": 2,
+      "latency_ms": 314
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 773,
+      "out_tokens": 33,
+      "latency_ms": 974
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 200,
+      "out_tokens": 2,
+      "latency_ms": 125
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 337,
+      "out_tokens": 2,
+      "latency_ms": 144
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 778,
+      "out_tokens": 84,
+      "latency_ms": 2549
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 392,
+      "out_tokens": 2,
+      "latency_ms": 230
+    },
+    {
+      "stage": "agent_answer",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "ad-hoc",
+      "in_tokens": 773,
+      "out_tokens": 32,
+      "latency_ms": 1094
+    },
+    {
+      "stage": "judge_l1",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 199,
+      "out_tokens": 2,
+      "latency_ms": 132
+    },
+    {
+      "stage": "judge_grounded",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "738a4f40c295fe51",
+      "in_tokens": 343,
+      "out_tokens": 2,
+      "latency_ms": 188
+    },
+    {
+      "stage": "judge_pair",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "e6399cf91b294f03",
+      "in_tokens": 176,
+      "out_tokens": 2,
+      "latency_ms": 111
+    },
+    {
+      "stage": "judge_pair",
+      "model": "qwen2.5:7b-instruct",
+      "prompt_sha": "e6399cf91b294f03",
+      "in_tokens": 182,
+      "out_tokens": 2,
+      "latency_ms": 75
     }
   ]
 }

@@ -9,6 +9,7 @@ Design rules:
 from __future__ import annotations
 
 import json
+import os
 import re
 import time
 from pathlib import Path
@@ -49,21 +50,59 @@ class PromptLibrary:
         return rendered, sha256_text(template)
 
 
+def _default_ollama_host() -> str:
+    env_host = os.environ.get("OLLAMA_HOST", "").strip()
+    if not env_host:
+        return "http://127.0.0.1:11434"
+    if not env_host.startswith(("http://", "https://")):
+        env_host = "http://" + env_host
+    return env_host.rstrip("/")
+
+
 class OllamaBackend:
     """Thin, inspectable HTTP client. No SDK magic between us and the model."""
 
-    def __init__(self, host: str = "http://localhost:11434", model: str = "qwen2.5:7b-instruct",
+    def __init__(self, host: str | None = None, model: str = "qwen2.5:7b-instruct",
                  embed_model: str = "nomic-embed-text", timeout: int = 240):
-        self.host = host.rstrip("/")
+        self.host = (host or _default_ollama_host()).rstrip("/")
         self.model = model
         self.embed_model = embed_model
         self.timeout = timeout
+        self._available_cache: bool | None = None
+        self._embed_cache: dict[str, list[float]] = {}
 
     def available(self) -> bool:
+        if self._available_cache is not None:
+            return self._available_cache
         try:
-            return requests.get(f"{self.host}/api/tags", timeout=3).status_code == 200
+            ok = requests.get(f"{self.host}/api/tags", timeout=3).status_code == 200
+            self._available_cache = ok
+            return ok
         except requests.RequestException:
             return False
+
+    def _post_with_retry(self, path: str, payload: dict, retries: int = 2) -> dict:
+        last_exc: Exception | None = None
+        for attempt in range(retries + 1):
+            try:
+                r = requests.post(f"{self.host}{path}", json=payload, timeout=self.timeout)
+                r.raise_for_status()
+                return r.json()
+            except (requests.ConnectionError, requests.Timeout) as exc:
+                last_exc = exc
+                if attempt < retries:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise
+            except requests.HTTPError as exc:
+                last_exc = exc
+                status = exc.response.status_code if exc.response is not None else 0
+                if status >= 500 and attempt < retries:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise
+        assert last_exc is not None
+        raise last_exc
 
     def generate(self, prompt: str, system: str | None = None, temperature: float = 0.2,
                  max_tokens: int = 2048) -> tuple[str, dict]:
@@ -73,9 +112,7 @@ class OllamaBackend:
         }
         if system:
             payload["system"] = system
-        r = requests.post(f"{self.host}/api/generate", json=payload, timeout=self.timeout)
-        r.raise_for_status()
-        data = r.json()
+        data = self._post_with_retry("/api/generate", payload)
         return data.get("response", ""), {
             "prompt_eval_count": data.get("prompt_eval_count", 0),
             "eval_count": data.get("eval_count", 0),
@@ -84,11 +121,14 @@ class OllamaBackend:
     def embed(self, texts: list[str]) -> list[list[float]]:
         vectors: list[list[float]] = []
         for text in texts:
-            r = requests.post(f"{self.host}/api/embeddings",
-                              json={"model": self.embed_model, "prompt": text[:8000]},
-                              timeout=self.timeout)
-            r.raise_for_status()
-            vectors.append(r.json()["embedding"])
+            key = text[:8000]
+            if key in self._embed_cache:
+                vectors.append(self._embed_cache[key])
+                continue
+            data = self._post_with_retry("/api/embeddings", {"model": self.embed_model, "prompt": key})
+            vec = data["embedding"]
+            self._embed_cache[key] = vec
+            vectors.append(vec)
         return vectors
 
 

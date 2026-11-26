@@ -4,6 +4,7 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
+from forge.runner.engine import _resolve_bound_csv
 from forge.tools.registry import REGISTRY
 
 
@@ -57,3 +58,24 @@ def test_csv_lookup_tool():
     finally:
         if temp_path.exists():
             temp_path.unlink()
+
+
+def test_resolve_bound_csv_cross_os_and_run_dir(tmp_path):
+    docs_dir = tmp_path / "docs"
+    run_dir = tmp_path / "run"
+    docs_dir.mkdir()
+    run_dir.mkdir()
+    csv_file = docs_dir / "berth_schedule.csv"
+    csv_file.write_text("vessel,berth\nMV TEST,B1\n", encoding="utf-8")
+
+    allowed = [r"C:\Users\other\project\demos\portops\docs\berth_schedule.csv"]
+    resolved = _resolve_bound_csv("berth_schedule.csv", allowed, run_dir=run_dir)
+    assert resolved is not None and Path(resolved).resolve() == csv_file.resolve()
+
+    resolved_win = _resolve_bound_csv(
+        r"C:\Users\other\project\demos\portops\docs\berth_schedule.csv",
+        allowed,
+        run_dir=run_dir,
+    )
+    assert resolved_win is not None and Path(resolved_win).resolve() == csv_file.resolve()
+    assert _resolve_bound_csv("secrets.csv", allowed, run_dir=run_dir) is None

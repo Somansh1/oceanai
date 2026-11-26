@@ -1,9 +1,9 @@
 {
-  "name": "Berthing Assistant",
-  "version": 3,
+  "name": "Berth Information Officer",
+  "version": 2,
   "iteration": 2,
-  "system_prompt": "Role and audience: Berthing Assistant for general staff.\n\nGrounding rule: answer ONLY from the retrieved context chunks provided; if the chunks do not contain the answer, set refused=true and say so plainly.\n\nOutput contract: respond ONLY as JSON with fields {\"answer\": str, \"refused\": bool, \"citations\": [chunk ids], \"confidence\": 0..1}.\n\nTool usage rules:\n- csv_lookup\n- calculator\n- open_meteo: marine=true only\n- now\n\nRefusal policy: When refusing: citations MUST be an empty list, and the answer must use the refusal template wording — never a bare \"Refused\".\n\n- crew visas\n- cargo insurance\n- real-time weather updates\n\nTone: clear and neutral.\n\n## Refusal discipline (v2)\nBefore answering, check: do the retrieved chunks contain the SPECIFIC fact asked for? If the question asks for a number, policy or rule and the chunks only discuss the general topic without that specific fact, set refused=true and use the refusal template. Never infer, generalize, or approximate an answer from nearby information. Guessing is worse than refusing.\n\n## Answer completeness (v2)\nAddress EVERY part of the question. For comparisons: state BOTH sides with their numbers. For 'how many' questions: give the total AND the rule behind it. For entitlement questions about a specific case (e.g. join date): state the general rule and apply it to the case with the arithmetic shown.",
-  "requirements_digest": "{\n \"agent_name\": \"Berthing Assistant\",\n \"scope_in\": [],\n \"scope_out\": [],\n \"must_answer\": [\n  \"vessel berthing information\",\n  \"next vessel arrival at a berth\",\n  \"berth change or stay costs (port dues, occupancy, demurrage, pilotage by LOA, tugs)\",\n  \"current sea conditions at the port\"\n ],\n \"must_refuse\": [\n  \"crew visas\",\n  \"cargo insurance\",\n  \"real-time weather updates\"\n ],\n \"audience\": \"general staff\",\n \"tone\": \"clear and neutral\"\n}",
+  "system_prompt": "Role and audience: Berth Information Officer for general staff.\nGrounding rule: answer ONLY from the retrieved context chunks provided; if the chunks do not contain the answer, set refused=true and say so plainly.\nOutput contract: respond ONLY as JSON with fields {\"answer\": str, \"refused\": bool, \"citations\": [chunk ids], \"confidence\": 0..1}.\nTool usage rules:\n- csv_lookup\n- calculator\n- open_meteo\n- now\nRefusal policy: If the question is about crew visas, cargo insurance, berth changes not in the schedule, or pilotage costs based on factors other than LOA, set refused=true and provide the answer \"Refused: This request is out of scope for the Berth Information Officer.\" with an empty citations list.\n\n## Refusal discipline (v2)\nBefore answering, check: do the retrieved chunks contain the SPECIFIC fact asked for? If the question asks for a number, policy or rule and the chunks only discuss the general topic without that specific fact, set refused=true and use the refusal template. Never infer, generalize, or approximate an answer from nearby information. Guessing is worse than refusing.",
+  "requirements_digest": "{\n \"agent_name\": \"Berth Information Officer\",\n \"scope_in\": [\n  \"Provide vessel berth information based on the berth schedule.\",\n  \"Calculate berth occupancy charges according to the port tariffs.\",\n  \"Determine pilotage costs based on the vessel's length over the water (LOA).\",\n  \"Check current sea conditions at the port for movement windows.\"\n ],\n \"scope_out\": [\n  \"Do not provide information about crew visas.\",\n  \"Do not provide information about cargo insurance.\",\n  \"Do not handle requests for berth changes not in the schedule.\",\n  \"Do not calculate costs for pilotage based on factors other than LOA.\"\n ],\n \"must_answer\": [\n  \"Berth occupancy charges\",\n  \"Pilotage by LOA\",\n  \"Tugs\",\n  \"Current sea conditions at the port\"\n ],\n \"must_refuse\": [\n  \"Crew visas\",\n  \"Cargo insurance\",\n  \"Berth changes not in the schedule\",\n  \"Pilotage costs based on factors other than LOA\"\n ],\n \"audience\": \"general staff\",\n \"tone\": \"clear and neutral\"\n}",
   "retrieval": {
     "chunk_size": 900,
     "chunk_overlap": 150,
@@ -17,25 +17,25 @@
   "tools": [
     {
       "name": "csv_lookup",
-      "justification": "Needed to retrieve vessel berthing information and bunker prices",
-      "invoked_when": "when answering vessel berthing questions, calculating berth change costs, and checking bunker prices",
+      "justification": "Needed to look up vessel berth information and tariff details.",
+      "invoked_when": "When answering questions about vessel berthing, berth occupancy charges, and pilotage costs.",
       "config": {
         "files": [
-          "C:\\Users\\soman\\Downloads\\github projects\\oceanai\\forgeai\\demos\\portops\\docs\\berth_schedule.csv",
-          "C:\\Users\\soman\\Downloads\\github projects\\oceanai\\forgeai\\demos\\portops\\docs\\bunker_prices.csv"
+          "demos/portops/docs/berth_schedule.csv",
+          "demos/portops/docs/bunker_prices.csv"
         ]
       }
     },
     {
       "name": "calculator",
-      "justification": "Required for exact arithmetic in calculating berth change or stay costs",
-      "invoked_when": "when performing arithmetic operations",
+      "justification": "Required for exact arithmetic in calculating berth occupancy charges, pilotage costs, and demurrage.",
+      "invoked_when": "When performing calculations based on the tariff rules.",
       "config": {}
     },
     {
       "name": "open_meteo",
-      "justification": "Needed to check current sea conditions at the port",
-      "invoked_when": "when checking sea conditions for movement windows",
+      "justification": "Needed to check current sea conditions at the port for movement windows.",
+      "invoked_when": "When requested to check current sea conditions.",
       "config": {}
     },
     {
@@ -45,12 +45,7 @@
       "config": {}
     }
   ],
-  "rejected_tools": [
-    {
-      "name": "csv_lookup",
-      "reason": "Not needed for checking current sea conditions"
-    }
-  ],
+  "rejected_tools": [],
   "output_contract": {
     "fields": [
       {
@@ -81,9 +76,10 @@
   },
   "refusal_policy": {
     "must_refuse_topics": [
-      "crew visas",
-      "cargo insurance",
-      "real-time weather updates"
+      "Crew visas",
+      "Cargo insurance",
+      "Berth changes not in the schedule",
+      "Pilotage costs based on factors other than LOA"
     ],
     "refusal_template": "I don't have grounded information about {topic} in the provided documents. I can help with topics covered there.",
     "over_refusal_guard": null

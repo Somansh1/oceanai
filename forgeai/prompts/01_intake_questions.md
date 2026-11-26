@@ -14,7 +14,8 @@ Return JSON: {"questions": [{"question": str, "decision_resolves": one of
 
 Rules:
 - If the brief + documents already determine a decision, do NOT ask about it.
-- Suggested defaults must be conservative (prefer refusing over guessing).
+- NEVER propose a question whose suggested_default contradicts an explicit capability or topic requested in the brief (for example, if the brief asks for fines or live sea conditions, do not suggest refusing them).
+- Suggested defaults must be conservative only where the brief is silent (prefer refusing genuinely uncovered extras over guessing).
 - 0 questions is a valid answer if the brief is fully determined.
 
 ## BRIEF

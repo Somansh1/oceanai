@@ -1,70 +1,109 @@
 {
   "brief_verbatim": "I'm the port operations coordinator at Meridian Harbour (51.95 N, 4.14 E). I need an assistant that answers vessel turnaround questions: which vessel is at which berth on a given date, when the next vessel arrives at a berth, what a berth change or stay costs under our tariff rules (port dues, occupancy, demurrage if free time is exceeded, pilotage by LOA, tugs), and it should check current sea conditions at the port when I ask about movement windows. It must use our berth schedule and bunker price sheets for lookups, do any arithmetic exactly, work out relative dates correctly, and refuse anything about crew visas or cargo insurance, which other departments handle. Plain, operational tone for watch officers.\n",
-  "agent_name": "Berthing Assistant",
-  "scope_in": [],
-  "scope_out": [],
+  "agent_name": "Berth Information Officer",
+  "scope_in": [
+    "Provide vessel berth information based on the berth schedule.",
+    "Calculate berth occupancy charges according to the port tariffs.",
+    "Determine pilotage costs based on the vessel's length over the water (LOA).",
+    "Check current sea conditions at the port for movement windows."
+  ],
+  "scope_out": [
+    "Do not provide information about crew visas.",
+    "Do not provide information about cargo insurance.",
+    "Do not handle requests for berth changes not in the schedule.",
+    "Do not calculate costs for pilotage based on factors other than LOA."
+  ],
   "audience": "general staff",
   "tone": "clear and neutral",
   "must_answer_topics": [
-    "vessel berthing information",
-    "next vessel arrival at a berth",
-    "berth change or stay costs (port dues, occupancy, demurrage, pilotage by LOA, tugs)",
-    "current sea conditions at the port"
+    "Berth occupancy charges",
+    "Pilotage by LOA",
+    "Tugs",
+    "Current sea conditions at the port"
   ],
   "must_refuse_topics": [
-    "crew visas",
-    "cargo insurance",
-    "real-time weather updates"
+    "Crew visas",
+    "Cargo insurance",
+    "Berth changes not in the schedule",
+    "Pilotage costs based on factors other than LOA"
   ],
-  "clarifying_questions": [],
+  "clarifying_questions": [
+    "Do we need to consider weather conditions from sources other than the current sea conditions at the port?",
+    "Should the assistant provide a detailed breakdown of costs for each component of port dues, or just the total?",
+    "How should the assistant handle requests for berth changes that are not in the schedule?",
+    "Do we need to include information about pilotage fees based on the vessel's length over the water (LOA) in the cost calculations?",
+    "Are there specific time windows or conditions under which the assistant should refuse to provide cost estimates?"
+  ],
   "assumptions": [
     {
-      "question": "Do you need the assistant to provide real-time weather updates or should it rely on pre-stored data?",
-      "decision_resolved": "tool_need",
-      "assumed_answer": "Pre-stored data",
+      "question": "Do we need to consider weather conditions from sources other than the current sea conditions at the port?",
+      "decision_resolved": "output_format",
+      "assumed_answer": "No, use current sea conditions only.",
       "basis": "conservative default (--auto)"
     },
     {
-      "question": "Should the assistant consider free time allowances when calculating demurrage?",
+      "question": "Should the assistant provide a detailed breakdown of costs for each component of port dues, or just the total?",
       "decision_resolved": "output_format",
-      "assumed_answer": "Yes, include free time allowances in demurrage calculations",
+      "assumed_answer": "Provide a total cost.",
+      "basis": "conservative default (--auto)"
+    },
+    {
+      "question": "How should the assistant handle requests for berth changes that are not in the schedule?",
+      "decision_resolved": "tool_need",
+      "assumed_answer": "Refuse requests for berth changes not in the schedule.",
+      "basis": "conservative default (--auto)"
+    },
+    {
+      "question": "Do we need to include information about pilotage fees based on the vessel's length over the water (LOA) in the cost calculations?",
+      "decision_resolved": "tool_need",
+      "assumed_answer": "Yes, include pilotage fees based on LOA.",
+      "basis": "conservative default (--auto)"
+    },
+    {
+      "question": "Are there specific time windows or conditions under which the assistant should refuse to provide cost estimates?",
+      "decision_resolved": "refusal_posture",
+      "assumed_answer": "Refuse estimates if berth changes are requested or if the vessel is not in the schedule.",
       "basis": "conservative default (--auto)"
     }
   ],
   "groundability": {
     "rows": [
       {
-        "topic": "vessel berthing information",
-        "status": "supported",
-        "evidence_density": 0.2,
-        "supporting_chunk_ids": [
-          "d03#c000"
-        ],
-        "note": "The chunk from 'Meridian Harbour — Port Tariffs & Operating Rules (Rev. 7, effective 1 Nov 2026)' contains information about berthing fees and charges, which directly relates to the topic of 'vessel b"
-      },
-      {
-        "topic": "next vessel arrival at a berth",
-        "status": "supported",
-        "evidence_density": 0.0,
-        "supporting_chunk_ids": [],
-        "note": "supported via attached tool 'now' (live data)"
-      },
-      {
-        "topic": "berth change or stay costs (port dues, occupancy, demurrage, pilotage by LOA, tugs)",
+        "topic": "Berth occupancy charges",
         "status": "supported",
         "evidence_density": 0.4,
         "supporting_chunk_ids": [
-          "d03#c000",
-          "d03#c001"
+          "d03#c002",
+          "d03#c000"
         ],
-        "note": "The chunks from 'd03#c000' and 'd03#c001' provide evidence related to berth change or stay costs, including port dues, berth occupancy, demurrage, pilotage by LOA, and tugs. These charges are directly"
+        "note": "The chunks from 'd03#c002' and 'd03#c000' contain information about berth occupancy charges, which directly addresses the topic of 'Berth occupancy charges'."
       },
       {
-        "topic": "current sea conditions at the port",
+        "topic": "Pilotage by LOA",
         "status": "supported",
-        "evidence_density": 0.0,
-        "supporting_chunk_ids": [],
-        "note": "supported via attached tool 'open_meteo' (live data)"
+        "evidence_density": 0.2,
+        "supporting_chunk_ids": [
+          "d03#c001"
+        ],
+        "note": "deterministic corroboration: 'Pilotage by LOA' terms found verbatim in d03#c001; model verdict disputed, re-asked with evidence quoted | DETERMINISTIC OVERRIDE: model refused twice; section heading + head terms for 'Pilotage by LOA' verified in d03#c001. Marked supported against the model's judgment — disagreement logged for the report."
+      },
+      {
+        "topic": "Tugs",
+        "status": "supported",
+        "evidence_density": 0.2,
+        "supporting_chunk_ids": [
+          "d03#c001"
+        ],
+        "note": "deterministic corroboration: 'Tugs' terms found verbatim in d03#c001; model verdict disputed, re-asked with evidence quoted | Two tugs are standard for all movements, USD 1,150 per hour per tug, A third tug is mandatory for vessels over 250 m LOA, and typical movement duration is 2 hours."
+      },
+      {
+        "topic": "Current sea conditions at the port",
+        "status": "supported",
+        "evidence_density": 0.2,
+        "supporting_chunk_ids": [
+          "d03#c001"
+        ],
+        "note": "deterministic corroboration: 'Current sea conditions at the port' terms found verbatim in d03#c001; model verdict disputed, re-asked with evidence quoted"
       }
     ],
     "rewritten_to_refusal": []

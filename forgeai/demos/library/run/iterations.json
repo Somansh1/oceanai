@@ -3,97 +3,80 @@
     {
       "scorecard": {
         "iteration": 0,
-        "total": 19,
-        "passed": 15,
-        "score": 0.7895,
-        "wilson_low": 0.5667,
-        "wilson_high": 0.9149,
+        "total": 21,
+        "passed": 13,
+        "score": 0.619,
+        "wilson_low": 0.4088,
+        "wilson_high": 0.7925,
         "by_class": {
-          "canary": 1,
-          "rephrase_a": 1,
-          "refusal": 1,
-          "answerable": 1
+          "ambiguous": 1,
+          "numeric": 1,
+          "cross_doc": 2,
+          "answerable": 3,
+          "canary": 1
         },
         "by_failure": {
-          "hallucination": 3,
-          "prompt_defect": 1
-        }
+          "prompt_defect": 1,
+          "hallucination": 7
+        },
+        "unstable_pairs": 0
       },
       "patches": [
         {
           "iteration": 0,
           "failure_class": "hallucination",
-          "target": "system_prompt/retrieval",
+          "target": "system_prompt",
           "change": "appended 'Refusal discipline' section: refuse when the SPECIFIC fact is absent, even if the topic is covered",
-          "rationale": "dominant failure class hallucination (3 cases)",
+          "rationale": "dominant failure class hallucination (7 cases)",
           "failure_ids": [
+            "q04",
             "q05",
+            "q12",
             "q14",
-            "q18"
+            "q16",
+            "q17",
+            "q20"
           ],
-          "score_before": 0.7895,
-          "score_after": 0.5789
+          "score_before": 0.619,
+          "score_after": 0.6667,
+          "rolled_back": false
         }
       ],
       "note": ""
     },
     {
       "scorecard": {
-        "iteration": 0,
-        "total": 19,
-        "passed": 11,
-        "score": 0.5789,
-        "wilson_low": 0.3628,
-        "wilson_high": 0.7686,
-        "by_class": {
-          "rephrase_b": 1,
-          "canary": 1,
-          "rephrase_a": 1,
-          "refusal": 2,
-          "answerable": 3
-        },
-        "by_failure": {
-          "prompt_defect": 3,
-          "hallucination": 5
-        }
-      },
-      "patches": [],
-      "note": "post-patch re-eval (78s)"
-    },
-    {
-      "scorecard": {
         "iteration": 1,
-        "total": 19,
-        "passed": 11,
-        "score": 0.5789,
-        "wilson_low": 0.3628,
-        "wilson_high": 0.7686,
+        "total": 21,
+        "passed": 14,
+        "score": 0.6667,
+        "wilson_low": 0.4537,
+        "wilson_high": 0.8281,
         "by_class": {
-          "rephrase_b": 1,
-          "canary": 1,
-          "rephrase_a": 1,
-          "refusal": 2,
-          "answerable": 3
+          "numeric": 1,
+          "cross_doc": 2,
+          "answerable": 3,
+          "canary": 1
         },
         "by_failure": {
-          "prompt_defect": 3,
-          "hallucination": 5
-        }
+          "wrong_refusal": 1,
+          "hallucination": 6
+        },
+        "unstable_pairs": 0
       },
       "patches": [
         {
           "iteration": 1,
-          "failure_class": "prompt_defect",
-          "target": "system_prompt/retrieval",
-          "change": "appended 'Answer completeness' section: comparisons state both sides + difference; calculator mandatory for arithmetic",
-          "rationale": "dominant failure class prompt_defect (3 cases)",
+          "failure_class": "wrong_refusal",
+          "target": "system_prompt",
+          "change": "appended 'Answer when grounded' section: refuse only when no chunk addresses the specifics [ROLLED BACK: score dropped 67% -> 57%]",
+          "rationale": "dominant failure class wrong_refusal (1 cases)",
           "failure_ids": [
-            "q02",
-            "q11",
-            "q17"
+            "q04"
           ],
-          "score_before": 0.5789,
-          "score_after": 0.7895
+          "score_before": 0.6667,
+          "score_after": 0.5714,
+          "rolled_back": true
         }
       ],
       "note": ""
@@ -101,39 +84,48 @@
     {
       "scorecard": {
         "iteration": 1,
-        "total": 19,
-        "passed": 15,
-        "score": 0.7895,
-        "wilson_low": 0.5667,
-        "wilson_high": 0.9149,
+        "total": 21,
+        "passed": 12,
+        "score": 0.5714,
+        "wilson_low": 0.3655,
+        "wilson_high": 0.7553,
         "by_class": {
-          "canary": 1,
-          "refusal": 2,
-          "answerable": 1
+          "refusal": 1,
+          "ambiguous": 1,
+          "numeric": 1,
+          "cross_doc": 2,
+          "answerable": 3,
+          "canary": 1
         },
         "by_failure": {
-          "hallucination": 4
-        }
+          "hallucination": 7,
+          "prompt_defect": 1,
+          "wrong_refusal": 1
+        },
+        "unstable_pairs": 0
       },
       "patches": [],
-      "note": "post-patch re-eval (90s)"
+      "note": "post-patch re-eval rejected & rolled back (57s)"
     },
     {
       "scorecard": {
         "iteration": 2,
-        "total": 19,
+        "total": 21,
         "passed": 14,
-        "score": 0.7368,
-        "wilson_low": 0.5121,
-        "wilson_high": 0.8819,
+        "score": 0.6667,
+        "wilson_low": 0.4537,
+        "wilson_high": 0.8281,
         "by_class": {
-          "canary": 2,
-          "refusal": 2,
-          "answerable": 1
+          "numeric": 1,
+          "cross_doc": 2,
+          "answerable": 3,
+          "canary": 1
         },
         "by_failure": {
-          "hallucination": 5
-        }
+          "wrong_refusal": 1,
+          "hallucination": 6
+        },
+        "unstable_pairs": 0
       },
       "patches": [],
       "note": "no patchable failure class remains (all already patched)"
@@ -142,25 +134,26 @@
   "tournament_log": [
     {
       "candidate": "candidate-1",
-      "pilot_score": 1.0,
-      "passed": 5,
+      "pilot_score": 0.4,
+      "passed": 2,
       "total": 5
     },
     {
       "candidate": "candidate-2",
-      "pilot_score": 0.8,
-      "passed": 4,
+      "pilot_score": 0.6,
+      "passed": 3,
       "total": 5
     },
     {
       "candidate": "candidate-3",
-      "pilot_score": 0.8,
-      "passed": 4,
+      "pilot_score": 0.4,
+      "passed": 2,
       "total": 5
     },
     {
       "note": "winner selected on pilot subset before iteration 0"
     }
   ],
-  "stopped_early": false
+  "stopped_early": false,
+  "budget_exhausted": false
 }

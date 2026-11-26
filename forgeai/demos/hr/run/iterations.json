@@ -3,66 +3,62 @@
     {
       "scorecard": {
         "iteration": 0,
-        "total": 14,
-        "passed": 13,
-        "score": 0.9286,
-        "wilson_low": 0.6853,
-        "wilson_high": 0.9873,
+        "total": 20,
+        "passed": 14,
+        "score": 0.7,
+        "wilson_low": 0.481,
+        "wilson_high": 0.8545,
         "by_class": {
+          "cross_doc": 2,
+          "canary": 2,
+          "ambiguous": 1,
           "answerable": 1
         },
         "by_failure": {
-          "hallucination": 1
-        }
+          "prompt_defect": 1,
+          "hallucination": 5
+        },
+        "unstable_pairs": 0
       },
       "patches": [
         {
           "iteration": 0,
           "failure_class": "hallucination",
-          "target": "system_prompt/retrieval",
+          "target": "system_prompt",
           "change": "appended 'Refusal discipline' section: refuse when the SPECIFIC fact is absent, even if the topic is covered",
-          "rationale": "dominant failure class hallucination (1 cases)",
+          "rationale": "dominant failure class hallucination (5 cases)",
           "failure_ids": [
-            "q01"
+            "q06",
+            "q07",
+            "q11",
+            "q12",
+            "q19"
           ],
-          "score_before": 0.9286,
-          "score_after": 0.8571
+          "score_before": 0.7,
+          "score_after": 0.75,
+          "rolled_back": false
         }
       ],
       "note": ""
     },
     {
       "scorecard": {
-        "iteration": 0,
-        "total": 14,
-        "passed": 12,
-        "score": 0.8571,
-        "wilson_low": 0.6006,
-        "wilson_high": 0.9599,
-        "by_class": {
-          "answerable": 2
-        },
-        "by_failure": {
-          "hallucination": 2
-        }
-      },
-      "patches": [],
-      "note": "post-patch re-eval (98s)"
-    },
-    {
-      "scorecard": {
         "iteration": 1,
-        "total": 14,
-        "passed": 12,
-        "score": 0.8571,
-        "wilson_low": 0.6006,
-        "wilson_high": 0.9599,
+        "total": 20,
+        "passed": 15,
+        "score": 0.75,
+        "wilson_low": 0.5313,
+        "wilson_high": 0.8881,
         "by_class": {
-          "answerable": 2
+          "cross_doc": 2,
+          "ambiguous": 1,
+          "canary": 1,
+          "answerable": 1
         },
         "by_failure": {
-          "hallucination": 2
-        }
+          "hallucination": 5
+        },
+        "unstable_pairs": 0
       },
       "patches": [],
       "note": "no patchable failure class remains (all already patched)"
@@ -77,8 +73,8 @@
     },
     {
       "candidate": "candidate-2",
-      "pilot_score": 0.8,
-      "passed": 4,
+      "pilot_score": 0.6,
+      "passed": 3,
       "total": 5
     },
     {
@@ -91,5 +87,6 @@
       "note": "winner selected on pilot subset before iteration 0"
     }
   ],
-  "stopped_early": false
+  "stopped_early": false,
+  "budget_exhausted": false
 }

@@ -1,107 +1,121 @@
 {
   "brief_verbatim": "I'm the front-desk supervisor at the Greystone University library. I need an assistant that answers student and staff questions about our lending rules: how many items each patron type can borrow and for how long, renewals, fines and when borrowing gets blocked, holds and recalls, and inter-library loans. It must only answer from our lending rules document, politely refuse anything about library room bookings, IT passwords, or archiving donations, and keep a plain, friendly tone for students.\n",
   "agent_name": "Library Assistant",
-  "scope_in": [],
-  "scope_out": [],
+  "scope_in": [
+    "Loan periods and limits for undergraduate and postgraduate students",
+    "Renewals of borrowed items",
+    "Fines and fees associated with borrowing",
+    "Holds and recalls of borrowed items",
+    "Inter-library loans"
+  ],
+  "scope_out": [
+    "Library room bookings",
+    "IT passwords",
+    "Archiving donations"
+  ],
   "audience": "general staff",
   "tone": "clear and neutral",
   "must_answer_topics": [
-    "Loan Periods and Limits",
+    "Loan periods and limits",
     "Renewals",
-    "Fines and Fees",
-    "Holds and Recalls",
-    "Inter-Library Loans"
+    "Fines and fees",
+    "Holds and recalls",
+    "Inter-library loans"
   ],
   "must_refuse_topics": [
-    "specific fines and fee amounts",
-    "specific scenarios or examples",
-    "process for blocking a patron's borrowing privileges",
-    "how to contact the library for further assistance",
-    "exceptions or special cases",
-    "library room bookings",
-    "IT passwords",
-    "archiving donations"
+    "How borrowing gets blocked",
+    "Room bookings",
+    "IT support",
+    "Archiving procedures"
   ],
-  "clarifying_questions": [],
+  "clarifying_questions": [
+    "Can the assistant provide information about fines and fees?",
+    "Should the assistant address how borrowing gets blocked?",
+    "Is the assistant expected to explain the process for placing holds and recalls?",
+    "Can the assistant discuss inter-library loans in detail?",
+    "Is there a specific tone or language style that should be used when answering questions from students?"
+  ],
   "assumptions": [
     {
-      "question": "Do you need the assistant to clarify specific fines and fee amounts?",
-      "decision_resolved": "output_format",
-      "assumed_answer": "Refuse to include specific amounts, only provide ranges or general descriptions.",
+      "question": "Can the assistant provide information about fines and fees?",
+      "decision_resolved": "refusal_posture",
+      "assumed_answer": "yes",
       "basis": "conservative default (--auto)"
     },
     {
-      "question": "Are there any specific scenarios or examples you would like the assistant to include for clarity?",
-      "decision_resolved": "output_format",
-      "assumed_answer": "Provide general rules without specific examples.",
+      "question": "Should the assistant address how borrowing gets blocked?",
+      "decision_resolved": "scope_boundary",
+      "assumed_answer": "no",
       "basis": "conservative default (--auto)"
     },
     {
-      "question": "Do you need the assistant to explain the process for blocking a patron's borrowing privileges?",
-      "decision_resolved": "output_format",
-      "assumed_answer": "Refuse to include details on blocking borrowing privileges.",
+      "question": "Is the assistant expected to explain the process for placing holds and recalls?",
+      "decision_resolved": "scope_boundary",
+      "assumed_answer": "yes",
       "basis": "conservative default (--auto)"
     },
     {
-      "question": "Should the assistant include information on how to contact the library for further assistance?",
-      "decision_resolved": "output_format",
-      "assumed_answer": "Include a general statement directing users to the library's help desk for further assistance.",
+      "question": "Can the assistant discuss inter-library loans in detail?",
+      "decision_resolved": "scope_boundary",
+      "assumed_answer": "yes",
       "basis": "conservative default (--auto)"
     },
     {
-      "question": "Do you need the assistant to mention any exceptions or special cases within the lending rules?",
-      "decision_resolved": "output_format",
-      "assumed_answer": "Refuse to include exceptions or special cases.",
+      "question": "Is there a specific tone or language style that should be used when answering questions from students?",
+      "decision_resolved": "audience_tone",
+      "assumed_answer": "plain, friendly",
       "basis": "conservative default (--auto)"
     }
   ],
   "groundability": {
     "rows": [
       {
-        "topic": "Loan Periods and Limits",
+        "topic": "Loan periods and limits",
         "status": "supported",
         "evidence_density": 0.333,
         "supporting_chunk_ids": [
           "d01#c000"
         ],
-        "note": "The chunk directly addresses the topic of 'Loan Periods and Limits' by specifying the number of items and duration for different categories of borrowers (undergraduate, postgraduate, academic staff, a"
+        "note": "The chunk [d01#c000] directly addresses the topic of 'Loan periods and limits' by providing specific details on the number of items that can be borrowed and the duration of the loan periods for differ"
       },
       {
         "topic": "Renewals",
         "status": "supported",
-        "evidence_density": 0.5,
+        "evidence_density": 0.667,
         "supporting_chunk_ids": [
-          "d01#c000"
+          "d01#c000",
+          "d01#c001"
         ],
-        "note": "Chunk d01#c000 contains information about the renewal process, which directly addresses the topic of renewals. It specifies the conditions under which items can be renewed and how renewals work, provi"
+        "note": "The chunks from both 'd01#c000' and 'd01#c001' contain information about the renewal process, which directly addresses the topic of 'Renewals'. These sections provide details on how renewals work, inc"
       },
       {
-        "topic": "Fines and Fees",
+        "topic": "Fines and fees",
         "status": "supported",
-        "evidence_density": 0.5,
+        "evidence_density": 0.333,
         "supporting_chunk_ids": [
           "d01#c001"
         ],
-        "note": "The chunk directly addresses fines and fees, providing specific details such as the fine rates for overdue items and lost items, which are relevant to the topic of 'Fines and Fees'."
+        "note": "Chunk d01#c001 directly addresses fines and fees, providing specific details about overdue fines, short-loan fees, lost item charges, and administrative fees, which are relevant to the topic of fines "
       },
       {
-        "topic": "Holds and Recalls",
+        "topic": "Holds and recalls",
         "status": "supported",
-        "evidence_density": 1.0,
+        "evidence_density": 0.667,
         "supporting_chunk_ids": [
+          "d01#c000",
           "d01#c001"
         ],
-        "note": "The chunk discusses holds and recalls, directly addressing the topic. It explains that patrons can place holds on loaned items and that the service desk holds returned items for 4 days. This provides "
+        "note": "Both chunks [d01#c000] and [d01#c001] contain information about holds and recalls, specifically mentioning that items with a hold cannot be renewed and providing details on the process of placing hold"
       },
       {
-        "topic": "Inter-Library Loans",
+        "topic": "Inter-library loans",
         "status": "supported",
         "evidence_density": 0.667,
         "supporting_chunk_ids": [
           "d01#c001",
           "d01#c002"
         ],
-        "note": "Both chunk d01#c001 and chunk d01#c002 contain relevant information about inter-library loans, including the number of requests per patron, the cost, and the delivery time. These details provide evide"
+        "note": "Both chunk d01#c001 and chunk d01#c002 contain information about inter-library loans, including the number of requests per patron, the cost, and the delivery time. This information directly addresses "
       }
     ],
     "rewritten_to_refusal": []

@@ -11,10 +11,38 @@ from rich.table import Table
 
 from . import __version__
 from .core import Chunk, DocumentMeta, QuarantineRecord, sha256_text
-from .evaltypes import IterationScorecard, RunManifest
+from .evaltypes import CostLedger, IterationScorecard, RunManifest
 from .ingest import SUPPORTED, chunk_document
-from .llm import OllamaBackend
+from .llm import Harness, OllamaBackend
 from .retrieve import HybridIndex
+
+
+def _load_ledger(run_dir: Path) -> CostLedger:
+    p = run_dir / "ledger.json"
+    if p.exists():
+        try:
+            return CostLedger.model_validate_json(p.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return CostLedger()
+
+
+def _apply_pair_consistency(harness: Harness, cases: list, results: list) -> None:
+    from .evaltypes import CaseKind
+    from .judge import pair_consistency
+    by_id = {r.case_id: r for r in results}
+    case_by_id = {c.id: c for c in cases}
+    for c in cases:
+        if c.kind == CaseKind.REPHRASE_A and c.rephrase_pair in by_id:
+            ok = pair_consistency(harness, by_id[c.id], by_id[c.rephrase_pair])
+            if ok is False:
+                by_id[c.id].judge_unstable = True
+                by_id[c.rephrase_pair].judge_unstable = True
+            note = f"pair_consistent={ok}"
+            c_note = case_by_id[c.id].notes or ""
+            suffix = note + (" (FAIL)" if ok is False else "")
+            if suffix not in c_note:
+                case_by_id[c.id].notes = (c_note + " | " if c_note else "") + suffix
 
 app = typer.Typer(no_args_is_help=True, help="ForgeAI — the factory that builds agents.")
 console = Console()
@@ -115,14 +143,15 @@ def build(
     docs: Path = typer.Option(..., "--docs", help="Document folder"),
     out: Path = typer.Option(None, "--out", help="Output run folder (default runs/<timestamp>)"),
     auto: bool = typer.Option(True, "--auto/--interactive", help="Auto-resolve interview questions"),
+    requirements: Path = typer.Option(None, "--requirements", help="Pre-approved RequirementsDoc JSON (skips intake)"),
     chunk_size: int = 900,
     overlap: int = 150,
-) -> None:
+) -> Path:
     """The factory stage 1-3: interview -> requirements -> groundability -> definition."""
-    from .generate import generate_agent, generate_prompt_candidates, tournament
-    from .intake import build_inventory, run_groundability, run_interview, synthesize_requirements
-    from .llm import Harness
-    from .spec import ToolBinding
+    from .generate import derive_retrieval_config, generate_agent, generate_prompt_candidates, tournament
+    from .intake import (build_inventory, interactive_checkpoint, run_groundability,
+                         run_interview, synthesize_requirements)
+    from .spec import RequirementsDoc, ToolBinding
 
     if not brief.is_file() or not docs.is_dir():
         console.print("[red]brief must be a file, docs must be a directory[/red]")
@@ -138,12 +167,17 @@ def build(
     if stale_index.exists():
         stale_index.unlink()
 
+    backend = OllamaBackend()
+    ledger = CostLedger()
+    harness = Harness(backend, ledger=ledger)
+    dense = backend.available()
+    degraded = [] if dense else ["dense retrieval unavailable (ollama down) — BM25-only index"]
+
     with console.status("") as status:
         status.update("[bold cyan]ingesting documents…")
         all_chunks, metas = _ingest_folder(docs, chunk_size, overlap)
-        backend = OllamaBackend()
         index = HybridIndex(out / "index.sqlite")
-        if backend.available():
+        if dense and all_chunks:
             status.update("[bold cyan]embedding chunks…")
             vectors = backend.embed([c.text for c in all_chunks])
             index.add_chunks(all_chunks, vectors)
@@ -151,36 +185,75 @@ def build(
             index.add_chunks(all_chunks)
         inventory = build_inventory(metas, all_chunks)
 
-        status.update("[bold cyan]interviewing the brief…")
-        harness = Harness(backend)
-        assumptions, _ = run_interview(harness, brief_text, inventory, auto=auto)
+        if requirements is not None and requirements.is_file():
+            req = RequirementsDoc.model_validate_json(requirements.read_text(encoding="utf-8"))
+        else:
+            if auto:
+                status.update("[bold cyan]interviewing the brief…")
+                assumptions, _ = run_interview(harness, brief_text, inventory, auto=True)
+            else:
+                status.stop()
+                assumptions, _ = run_interview(harness, brief_text, inventory, auto=False)
+                status.start()
 
-        status.update("[bold cyan]synthesizing requirements…")
-        req = synthesize_requirements(harness, brief_text, inventory, assumptions)
+            status.update("[bold cyan]synthesizing requirements…")
+            req = synthesize_requirements(harness, brief_text, inventory, assumptions)
 
         status.update("[bold cyan]selecting tools…")
         from .generate.generator import _tool_selection
-        data_files = [str(p.resolve()) for p in sorted(docs.rglob("*"))
-                      if p.is_file() and p.suffix.lower() in (".csv", ".xlsx")]
+        cwd_resolved = Path.cwd().resolve()
+        data_files = []
+        for p in sorted(docs.rglob("*")):
+            if p.is_file() and p.suffix.lower() in (".csv", ".xlsx"):
+                rp = p.resolve()
+                data_files.append(
+                    rp.relative_to(cwd_resolved).as_posix()
+                    if rp.is_relative_to(cwd_resolved)
+                    else str(rp)
+                )
         tools = _tool_selection(harness, req, inventory, data_files)
         attached_names = [t["name"] for t in tools.selected]
 
-        status.update("[bold cyan]probing groundability…")
-        req = run_groundability(harness, index, req, attached_tools=attached_names)
+        if requirements is None:
+            status.update("[bold cyan]probing groundability…")
+            req = run_groundability(harness, index, req, attached_tools=attached_names)
+
+            if not auto:
+                status.stop()
+                req = interactive_checkpoint(req)
+                status.start()
 
         status.update("[bold cyan]generating prompt candidates…")
         candidates = generate_prompt_candidates(harness, req, [ToolBinding(**t) for t in tools.selected])
         winner, tourney_log = tournament(harness, req, candidates)
 
         status.update("[bold cyan]assembling definition…")
-        definition = generate_agent(harness, req, inventory, winner, tools)
+        retrieval = derive_retrieval_config(all_chunks, metas, chunk_size, overlap, dense)
+        definition = generate_agent(harness, req, inventory, winner, tools, retrieval=retrieval)
 
     (out / "requirements.json").write_text(req.model_dump_json(indent=2), encoding="utf-8")
     (out / "definition.json").write_text(definition.model_dump_json(indent=2), encoding="utf-8")
     (out / "chunks.jsonl").write_text("\n".join(c.model_dump_json() for c in all_chunks), encoding="utf-8")
+    (out / "docmeta.json").write_text(json.dumps([m.model_dump() for m in metas], indent=2), encoding="utf-8")
     (out / "candidates.json").write_text(
         json.dumps([c.model_dump() for c in candidates] + [{"tournament": tourney_log}], indent=2),
         encoding="utf-8")
+    (out / "ledger.json").write_text(harness.ledger.model_dump_json(indent=2), encoding="utf-8")
+    prompt_hashes = {
+        p.stem: sha256_text(p.read_text(encoding="utf-8"))
+        for p in sorted(harness.prompts.directory.glob("*.md"))
+    }
+    manifest = RunManifest(
+        run_id=out.name,
+        created_at=datetime.now(timezone.utc).isoformat(),
+        brief_sha=sha256_text(brief_text),
+        docs=[{"filename": m.filename, "sha256": m.sha256, "n_chunks": m.n_chunks} for m in metas],
+        model=backend.model if dense else "none",
+        prompt_hashes=prompt_hashes,
+        config={"chunk_size": chunk_size, "overlap": overlap, "dense": dense, "auto": auto},
+        degraded_modes=degraded,
+    )
+    (out / "manifest.json").write_text(manifest.model_dump_json(indent=2), encoding="utf-8")
 
     console.print(f"\n[green]built:[/green] {definition.name} → [bold]{out}[/bold]")
     console.print(f"tools attached: {[t.name for t in definition.tools]}  rejected: {[t.name for t in definition.rejected_tools]}")
@@ -188,6 +261,7 @@ def build(
     console.print(f"groundability: {gsum}  assumptions: {len(req.assumptions)}  questions: {len(req.clarifying_questions)}")
     for r in req.groundability.rewritten_to_refusal:
         console.print(f"[yellow]rewritten to must-refuse:[/yellow] {r.topic}")
+    return out
 
 
 @app.command()
@@ -202,7 +276,7 @@ def chat(
     definition = AgentDefinition.model_validate_json(
         (run_dir / "definition.json").read_text(encoding="utf-8"))
     index = HybridIndex(run_dir / "index.sqlite")
-    agent = ForgeAgent(Harness(OllamaBackend()), index, definition)
+    agent = ForgeAgent(Harness(OllamaBackend()), index, definition, run_dir=run_dir)
     console.print(f"[bold]{definition.name}[/bold] — type your question, empty line to exit. tools: {[t.name for t in definition.tools]}")
     while True:
         try:
@@ -244,9 +318,8 @@ def evaluate(
 ) -> None:
     """Compile evals from the corpus, run them, judge them, score honestly."""
     from .evals import compile_evalset
-    from .evaltypes import CaseKind, EvalCase
-    from .judge import build_scorecard, judge_case, pair_consistency
-    from .llm import Harness
+    from .evaltypes import EvalCase
+    from .judge import build_scorecard, judge_case
     from .runner import ForgeAgent
     from .spec import AgentDefinition, RequirementsDoc
 
@@ -260,8 +333,8 @@ def evaluate(
         (run_dir / "requirements.json").read_text(encoding="utf-8"))
     index = HybridIndex(run_dir / "index.sqlite")
     backend = OllamaBackend()
-    harness = Harness(backend)
-    agent = ForgeAgent(harness, index, definition_obj)
+    harness = Harness(backend, ledger=_load_ledger(run_dir))
+    agent = ForgeAgent(harness, index, definition_obj, run_dir=run_dir)
 
     eval_path = run_dir / "evalset.jsonl"
     if not eval_path.exists():
@@ -274,29 +347,20 @@ def evaluate(
                  eval_path.read_text(encoding="utf-8").splitlines() if line.strip()]
         console.print(f"loaded {len(cases)} existing eval cases")
     if compile_only:
+        (run_dir / "ledger.json").write_text(harness.ledger.model_dump_json(indent=2), encoding="utf-8")
         return
 
     results = []
     kinds = {c.id: c.kind for c in cases}
+    case_by_id = {c.id: c for c in cases}
     with console.status("") as status:
         for i, case in enumerate(cases, 1):
             status.update(f"[bold cyan]evaluating {case.id} ({case.kind.value}) [{i}/{len(cases)}]")
             resp = agent.answer(case.question)
             results.append(judge_case(harness, index, case, resp))
 
-        # rephrase pair consistency
-        by_id = {r.case_id: r for r in results}
-        case_by_id = {c.id: c for c in cases}
-        for c in cases:
-            if c.kind == CaseKind.REPHRASE_A and c.rephrase_pair in by_id:
-                ok = pair_consistency(harness, by_id[c.id], by_id[c.rephrase_pair])
-                note = f"pair_consistent={ok}"
-                if ok is False:
-                    c_note = case_by_id[c.id].notes or ""
-                    case_by_id[c.id].notes = (c_note + " | " if c_note else "") + note + " (FAIL)"
-                else:
-                    c_note = case_by_id[c.id].notes or ""
-                    case_by_id[c.id].notes = (c_note + " | " if c_note else "") + note
+        _apply_pair_consistency(harness, cases, results)
+        eval_path.write_text("\n".join(c.model_dump_json() for c in cases), encoding="utf-8")
 
     scorecard = build_scorecard(results, cases, iteration=definition_obj.iteration)
     if definition is not None:
@@ -334,29 +398,26 @@ def optimize(
     max_iterations: int = typer.Option(3, "--max-iterations"),
     min_gain: float = typer.Option(0.03, "--min-gain", help="Early-stop marginal-gain threshold"),
     skip_tournament: bool = typer.Option(False, "--skip-tournament"),
+    max_tokens: int | None = typer.Option(None, "--max-tokens", help="Optional token budget cap"),
+    max_latency_s: int | None = typer.Option(None, "--max-latency-s", help="Optional model latency cap (seconds)"),
 ) -> None:
     """The critic-optimizer loop: triage -> ONE surgical patch -> re-eval, logged."""
-    import dataclasses
-
     from .critic import optimize as run_optimize
-    from .evaltypes import CaseResult, EvalCase, IterationScorecard
+    from .evaltypes import CaseResult, EvalCase
     from .judge import build_scorecard, judge_case
-    from .llm import Harness
     from .runner import ForgeAgent
-    from .spec import AgentDefinition, RequirementsDoc
+    from .spec import AgentDefinition
 
     definition = AgentDefinition.model_validate_json(
         (run_dir / "definition.json").read_text(encoding="utf-8"))
-    req = RequirementsDoc.model_validate_json(
-        (run_dir / "requirements.json").read_text(encoding="utf-8"))
     index = HybridIndex(run_dir / "index.sqlite")
-    harness = Harness(OllamaBackend())
+    harness = Harness(OllamaBackend(), ledger=_load_ledger(run_dir))
     cases = [EvalCase.model_validate_json(line) for line in
              (run_dir / "evalset.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
 
     def evaluator(defn: AgentDefinition, case_subset: list | None = None
-                  ) -> tuple[list[CaseResult], IterationScorecard]:
-        agent = ForgeAgent(harness, index, defn)
+                  ) -> tuple[list[CaseResult], "IterationScorecard"]:
+        agent = ForgeAgent(harness, index, defn, run_dir=run_dir)
         active = case_subset if case_subset is not None else cases
         results = []
         for case in active:
@@ -366,21 +427,25 @@ def optimize(
 
     candidates = None
     if not skip_tournament and (run_dir / "candidates.json").exists():
-        import json as _json
-        raw = _json.loads((run_dir / "candidates.json").read_text(encoding="utf-8"))
+        raw = json.loads((run_dir / "candidates.json").read_text(encoding="utf-8"))
         cand_list = [c for c in raw if isinstance(c, dict) and "system_prompt" in c][:3]
         candidates = [
             AgentDefinition(
                 name=c.get("name", f"candidate-{i}"), system_prompt=c["system_prompt"],
                 requirements_digest=definition.requirements_digest,
+                retrieval=definition.retrieval,
                 tools=definition.tools, rejected_tools=definition.rejected_tools,
                 output_contract=definition.output_contract,
                 refusal_policy=definition.refusal_policy)
             for i, c in enumerate(cand_list, 1)]
 
     with console.status("[bold cyan]optimizing…"):
-        result = run_optimize(evaluator, definition, cases, candidates=candidates,
-                              max_iterations=max_iterations, min_gain=min_gain)
+        result = run_optimize(
+            evaluator, definition, cases, candidates=candidates,
+            max_iterations=max_iterations, min_gain=min_gain,
+            ledger=harness.ledger, max_tokens=max_tokens,
+            max_latency_ms=(max_latency_s * 1000 if max_latency_s is not None else None),
+        )
     # the tournament winner is the agent now — it carries the agent's name;
     # candidate identities stay in the tournament log
     result.definition.name = definition.name
@@ -394,12 +459,19 @@ def optimize(
             for e in result.entries],
         "tournament_log": result.tournament_log,
         "stopped_early": result.stopped_early,
+        "budget_exhausted": result.budget_exhausted,
     }
     (run_dir / "iterations.json").write_text(
         json.dumps(iterations_blob, indent=2), encoding="utf-8")
-    # final refresh: regenerate results.jsonl + scorecard.json from the final
-    # definition so the report and repo artifacts reflect the shipped agent
-    final_results, final_scorecard = evaluator(result.definition)
+    # final refresh: reuse final results from optimize (or run if empty) + pair consistency
+    if result.final_results:
+        final_results = result.final_results
+    else:
+        final_results, _ = evaluator(result.definition)
+    _apply_pair_consistency(harness, cases, final_results)
+    final_scorecard = build_scorecard(final_results, cases, iteration=result.definition.iteration)
+    (run_dir / "evalset.jsonl").write_text(
+        "\n".join(c.model_dump_json() for c in cases), encoding="utf-8")
     (run_dir / "results.jsonl").write_text(
         "\n".join(r.model_dump_json() for r in final_results), encoding="utf-8")
     (run_dir / "scorecard.json").write_text(
@@ -425,6 +497,33 @@ def report(run_dir: Path = typer.Argument(..., help="Run folder")) -> None:
     out = run_dir / "report.md"
     out.write_text(text, encoding="utf-8")
     console.print(f"[green]report written:[/green] {out} ({len(text)} chars)")
+
+
+@app.command()
+def run(
+    brief: Path = typer.Option(..., "--brief", help="One-paragraph brief file"),
+    docs: Path = typer.Option(..., "--docs", help="Document folder"),
+    out: Path = typer.Option(None, "--out", help="Output run folder (default runs/<timestamp>)"),
+    auto: bool = typer.Option(True, "--auto/--interactive", help="Unattended mode vs interactive checkpoint"),
+    max_iterations: int = typer.Option(3, "--max-iterations"),
+    min_gain: float = typer.Option(0.03, "--min-gain"),
+    skip_tournament: bool = typer.Option(False, "--skip-tournament"),
+    max_tokens: int | None = typer.Option(None, "--max-tokens"),
+    max_latency_s: int | None = typer.Option(None, "--max-latency-s"),
+    chunk_size: int = 900,
+    overlap: int = 150,
+) -> None:
+    """Unattended full factory pipeline: build -> compile evals -> optimize -> report."""
+    run_dir = build(
+        brief=brief, docs=docs, out=out, auto=auto, requirements=None,
+        chunk_size=chunk_size, overlap=overlap,
+    )
+    evaluate(run_dir=run_dir, compile_only=True, definition=None)
+    optimize(
+        run_dir=run_dir, max_iterations=max_iterations, min_gain=min_gain,
+        skip_tournament=skip_tournament, max_tokens=max_tokens, max_latency_s=max_latency_s,
+    )
+    report(run_dir=run_dir)
 
 
 @app.command()

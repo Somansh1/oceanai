@@ -11,10 +11,11 @@ import re
 
 from pydantic import BaseModel, Field
 
+from ..core import Chunk, DocumentMeta
 from ..llm import Harness
 from ..spec import (AgentDefinition, RefusalPolicy, RequirementsDoc,
                     RetrievalConfig, ToolBinding, ToolRejection)
-from ..tools import REGISTRY, format_tools_for_prompt
+from ..tools import REGISTRY
 
 
 class PromptCandidate(BaseModel):
@@ -36,33 +37,42 @@ class ToolDecision(BaseModel):
                 seen.add(name)
                 kept.append(t)
         self.selected = kept
-        rej_names = {r.get("name", "") for r in self.rejected}
-        self.rejected = [r for r in self.rejected if r.get("name") in REGISTRY]
+        # Never keep a selected tool in rejected; keep unique valid rejections.
+        rej_seen: set[str] = set()
+        clean_rejected: list[dict[str, str]] = []
+        for r in self.rejected:
+            name = r.get("name", "")
+            if name in REGISTRY and name not in seen and name not in rej_seen:
+                rej_seen.add(name)
+                clean_rejected.append(r)
         for name in REGISTRY:
-            if name not in seen and name not in rej_names:
-                self.rejected.append({"name": name, "reason": "not selected by generator"})
+            if name not in seen and name not in rej_seen:
+                clean_rejected.append({"name": name, "reason": "not selected by generator"})
+        self.rejected = clean_rejected
         return self
 
 
 _HINT_RULES = {
-    "calculator": ["cost", "fee", "demurrage", "charge", "price", "total",
-                   "arithmetic", "exactly", "compute", "calculate", "per ton",
-                   "difference"],
-    "open_meteo": ["weather", "sea condition", "wind", "swell", "forecast",
-                   "wave", "marine"],
-    "now": ["next vessel", "current", "today", "as of", "upcoming",
-            "relative date", "this week", "remain"],
+    "calculator": ["cost", "costs", "fee", "fees", "demurrage", "charge", "charges",
+                   "price", "prices", "total", "arithmetic", "exact", "exactly",
+                   "compute", "calculate", "per ton", "difference"],
+    "open_meteo": ["weather", "sea condition", "sea conditions", "wind speed",
+                   "windy", "swell", "forecast", "wave", "waves", "marine"],
+    "now": ["next vessel", "current date", "current time", "today", "as of",
+            "upcoming", "relative date", "relative dates", "this week"],
 }
 
 
 def _hinted_tools(brief: str, data_files: list[str] | None) -> dict[str, str]:
-    """Deterministic hints from the brief. The selector LLM once rejected the
-    calculator/now/open_meteo on a brief that explicitly demanded exact
-    arithmetic, relative dates and sea conditions — code disposes over it."""
+    """Deterministic word-boundary hints from the brief.
+
+    Uses word boundaries so substrings like 'wind' in 'Northwind' never trigger
+    the weather tool on an HR brief.
+    """
     low = brief.lower()
     hints: dict[str, str] = {}
     for name, kws in _HINT_RULES.items():
-        hit = next((k for k in kws if k in low), None)
+        hit = next((k for k in kws if re.search(rf"\b{re.escape(k)}\b", low)), None)
         if hit:
             hints[name] = f"brief keyword rule matched '{hit}'"
     if data_files:
@@ -174,14 +184,43 @@ def generate_prompt_candidates(harness: Harness, req: RequirementsDoc,
     return candidates
 
 
+def derive_retrieval_config(chunks: list[Chunk], metas: list[DocumentMeta],
+                            chunk_size: int = 900, overlap: int = 150,
+                            dense_ready: bool = True) -> RetrievalConfig:
+    """Derive retrieval knobs from corpus size and structure rather than fixed defaults."""
+    n_chunks = len(chunks)
+    has_tabular = any(m.kind in ("csv", "xlsx") for m in metas)
+    if n_chunks <= 6:
+        top_k_dense, top_k_sparse = min(4, max(2, n_chunks)), min(6, max(3, n_chunks))
+    elif n_chunks <= 25:
+        top_k_dense, top_k_sparse = 5, 8
+    else:
+        top_k_dense, top_k_sparse = 7, 10
+    if has_tabular:
+        top_k_dense = max(top_k_dense, 5)
+        top_k_sparse = max(top_k_sparse, 8)
+    return RetrievalConfig(
+        chunk_size=chunk_size,
+        chunk_overlap=overlap,
+        top_k_dense=top_k_dense,
+        top_k_sparse=top_k_sparse,
+        rrf_k=60,
+        hybrid=dense_ready,
+        query_rewrite=False,
+        min_score=0.0,
+    )
+
+
 def generate_agent(harness: Harness, req: RequirementsDoc, inventory: str,
                     winner: PromptCandidate,
-                    tools: ToolDecision, iteration: int = 0) -> AgentDefinition:
+                    tools: ToolDecision, iteration: int = 0,
+                    retrieval: RetrievalConfig | None = None) -> AgentDefinition:
     definition = AgentDefinition(
         name=req.agent_name,
         iteration=iteration,
         system_prompt=winner.system_prompt,
         requirements_digest=_digest(req),
+        retrieval=retrieval or RetrievalConfig(),
         tools=[ToolBinding(**t) for t in tools.selected],
         rejected_tools=[ToolRejection(**t) for t in tools.rejected],
         refusal_policy=RefusalPolicy(

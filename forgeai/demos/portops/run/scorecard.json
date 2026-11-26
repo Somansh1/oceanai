@@ -1,18 +1,21 @@
 {
   "iteration": 2,
-  "total": 18,
-  "passed": 11,
-  "score": 0.6111,
-  "wilson_low": 0.3862,
-  "wilson_high": 0.797,
+  "total": 23,
+  "passed": 10,
+  "score": 0.4348,
+  "wilson_low": 0.2563,
+  "wilson_high": 0.6319,
   "by_class": {
+    "answerable": 7,
+    "ambiguous": 1,
+    "cross_doc": 1,
+    "numeric": 2,
     "rephrase_b": 1,
-    "numeric": 1,
-    "refusal": 1,
-    "answerable": 3,
     "rephrase_a": 1
   },
   "by_failure": {
-    "hallucination": 7
-  }
+    "prompt_defect": 2,
+    "hallucination": 11
+  },
+  "unstable_pairs": 2
 }

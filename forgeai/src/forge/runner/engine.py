@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import re
+from pathlib import Path, PureWindowsPath
 
 from pydantic import BaseModel, Field
 
@@ -35,10 +36,52 @@ class AgentResponse:
         self.parse_failed = parse_failed
 
 
+def _path_basename(path_str: str) -> str:
+    """Extract filename across both Windows and POSIX path formats."""
+    if "\\" in path_str or (len(path_str) > 1 and path_str[1] == ":"):
+        return PureWindowsPath(path_str).name
+    return Path(path_str).name
+
+
+def _resolve_bound_csv(
+    requested: str,
+    allowed_files: list[str],
+    run_dir: Path | None = None,
+) -> str | None:
+    """Resolve a requested CSV/XLSX path strictly within bound files (cross-OS portable)."""
+    if not allowed_files:
+        return requested
+    req_name = _path_basename(requested) if requested else ""
+    pkg_root = Path(__file__).resolve().parents[3]
+    for f in allowed_files:
+        fname = _path_basename(f)
+        if requested == f or (req_name and req_name == fname):
+            candidates: list[Path] = [Path(f), Path.cwd() / f, Path.cwd() / fname, pkg_root / f]
+            if run_dir is not None:
+                candidates.extend([
+                    run_dir / f,
+                    run_dir / fname,
+                    run_dir.parent / "docs" / fname,
+                ])
+            for candidate in candidates:
+                if candidate.is_file():
+                    return str(candidate)
+            if run_dir is not None and (run_dir.parent / "docs").is_dir():
+                for match in (run_dir.parent / "docs").rglob(fname):
+                    if match.is_file():
+                        return str(match)
+            return str(Path(f))
+    if not requested and len(allowed_files) == 1:
+        return _resolve_bound_csv(allowed_files[0], allowed_files, run_dir=run_dir)
+    return None
+
+
 def run_tool_loop(harness: Harness, definition: AgentDefinition,
-                  question: str, context: str, max_calls: int = 3) -> tuple[str, list[dict]]:
+                  question: str, context: str, max_calls: int = 2,
+                  run_dir: Path | None = None) -> tuple[str, list[dict]]:
     """Let the agent request tools via TOOL: {json} lines; code executes them."""
     attachments = []
+    allowed_csv_files: list[str] = []
     for t in definition.tools:
         tool = REGISTRY.get(t.name)
         if not tool:
@@ -46,15 +89,16 @@ def run_tool_loop(harness: Harness, definition: AgentDefinition,
         line = f"- {tool.name}: {tool.description}\n  call: {tool.usage}"
         files = (t.config or {}).get("files")
         if files:
+            allowed_csv_files.extend(files)
             line += "\n  data files: " + ", ".join(files)
         attachments.append(line)
-    attachments = "\n".join(attachments)
+    attachments_text = "\n".join(attachments)
     transcript = ""
     calls: list[dict] = []
     for _ in range(max_calls):
         # ask only for a tool request or a final answer
         prompt = (
-            "You have these tools available:\n" + attachments + "\n\n"
+            "You have these tools available:\n" + attachments_text + "\n\n"
             "Choose exactly one:\n"
             "  TOOL: {\"tool\": ..., \"args\": {...}}   (request one tool call)\n"
             "  FINAL_SNIPPET: <brief answer given the context, or leave empty>\n\n"
@@ -66,13 +110,25 @@ def run_tool_loop(harness: Harness, definition: AgentDefinition,
         if m:
             try:
                 req = json.loads(_balanced_json(out[m.end():]))
-                tool = REGISTRY.get(str(req.get("tool", "")))
-                if tool is None:
-                    transcript += f"\ntool {req.get('tool')}: unknown tool"
-                    calls.append({"tool": req.get("tool"), "ok": False, "error": "unknown"})
+                tool_name = str(req.get("tool", ""))
+                tool = REGISTRY.get(tool_name)
+                if tool is None or not any(tb.name == tool_name for tb in definition.tools):
+                    transcript += f"\ntool {tool_name}: not attached or unknown"
+                    calls.append({"tool": tool_name, "ok": False, "error": "not attached"})
                     continue
-                result = tool.run(req.get("args", {}))
-                calls.append({"tool": tool.name, "args": req.get("args", {}), "result": result[:400]})
+                args = dict(req.get("args", {}) or {})
+                if tool.name == "csv_lookup" and allowed_csv_files:
+                    resolved = _resolve_bound_csv(
+                        str(args.get("file", "")), allowed_csv_files, run_dir=run_dir
+                    )
+                    if not resolved:
+                        msg = f"error: file not in bound files ({allowed_csv_files})"
+                        transcript += f"\n[csv_lookup] {msg}"
+                        calls.append({"tool": "csv_lookup", "args": args, "result": msg})
+                        continue
+                    args["file"] = resolved
+                result = tool.run(args)
+                calls.append({"tool": tool.name, "args": args, "result": result[:400]})
                 transcript += f"\n[{tool.name}] {result[:800]}"
             except json.JSONDecodeError:
                 calls.append({"tool": "?", "ok": False, "error": "bad json"})
@@ -125,17 +181,49 @@ class ContractAnswer(BaseModel):
 class ForgeAgent:
     """Loads ANY definition. Retrieval params, tools, prompt all come from data."""
 
-    def __init__(self, harness: Harness, index: HybridIndex, definition: AgentDefinition):
+    def __init__(self, harness: Harness, index: HybridIndex, definition: AgentDefinition,
+                 run_dir: Path | None = None):
         self.harness = harness
         self.index = index
         self.definition = definition
+        self.run_dir = run_dir
+
+    def _embed_query(self, text: str) -> list[float] | None:
+        if not self.definition.retrieval.hybrid or not self.index._dense_ready:
+            return None
+        if not self.harness.backend.available():
+            return None
+        try:
+            return self.harness.backend.embed([text])[0]
+        except Exception:
+            return None
 
     def answer(self, question: str) -> AgentResponse:
-        cfg = self.definition.refusal_policy
         rcfg = self.definition.retrieval
-        qvec = None  # embeddings optional at runtime
-        hits = self.index.query(question, vector=qvec, top_k=rcfg.top_k_dense,
-                                 dense_k=rcfg.top_k_dense, sparse_k=rcfg.top_k_sparse)
+        top_k = max(rcfg.top_k_dense, rcfg.top_k_sparse)
+        qvec = self._embed_query(question)
+        hits = self.index.query(
+            question, vector=qvec, top_k=top_k,
+            dense_k=rcfg.top_k_dense, sparse_k=rcfg.top_k_sparse,
+            rrf_k=rcfg.rrf_k, hybrid=rcfg.hybrid, min_score=rcfg.min_score,
+        )
+        if rcfg.query_rewrite:
+            rewritten = self.harness.ask_text(
+                f"Rewrite this question as 4-8 concise search keywords:\n{question}",
+                stage="query_rewrite", temperature=0.0,
+            ).strip()
+            if rewritten:
+                qvec2 = self._embed_query(rewritten)
+                hits2 = self.index.query(
+                    rewritten, vector=qvec2, top_k=top_k,
+                    dense_k=rcfg.top_k_dense, sparse_k=rcfg.top_k_sparse,
+                    rrf_k=rcfg.rrf_k, hybrid=rcfg.hybrid, min_score=rcfg.min_score,
+                )
+                merged: dict[str, float] = {}
+                for cid, sc in hits + hits2:
+                    merged[cid] = max(merged.get(cid, 0.0), sc)
+                hits = sorted(merged.items(), key=lambda kv: kv[1], reverse=True)[:top_k]
+
         retrieved_ids = [cid for cid, _ in hits]
         context = "\n\n---\n\n".join(
             f"[{cid}] {self.index.get_chunk(cid).text}" for cid in retrieved_ids
@@ -143,15 +231,13 @@ class ForgeAgent:
         tool_snippet, tool_calls = (None, [])
         if self.definition.tools:
             tool_snippet, tool_calls = run_tool_loop(self.harness, self.definition,
-                                                     question, context)
+                                                     question, context, run_dir=self.run_dir)
         user_msg = (
             f"Context chunks:\n{context[:6000]}\n\n"
             + (f"Tool evidence:\n{tool_snippet}\n\n" if tool_snippet else "")
             + f"Question: {question}\n\n"
             "Respond ONLY as JSON: {\"answer\": str, \"refused\": bool, \"citations\": [chunk ids], \"confidence\": 0..1}"
         )
-        raw = self.harness.ask_text(user_msg, system=self.definition.system_prompt,
-                                    stage="agent_answer", temperature=0.1)
         from ..llm import StructuredGenError
         try:
             data = self.harness.ask_json(ContractAnswer, user_msg,
@@ -159,7 +245,7 @@ class ForgeAgent:
                                          stage="agent_answer", temperature=0.1)
             resp = AgentResponse(
                 answer=data.answer, refused=data.refused, citations=data.citations,
-                retrieved=retrieved_ids, raw=raw, tool_calls=tool_calls,
+                retrieved=retrieved_ids, raw="", tool_calls=tool_calls,
                 confidence=data.confidence, parse_failed=False)
             return resp
         except StructuredGenError as exc:

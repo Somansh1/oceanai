@@ -9,8 +9,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pydantic import BaseModel
-
 from .cli import _ingest_folder  # reuse the same chunking path
 from .evaltypes import CaseResult, EvalCase
 from .judge import build_scorecard, judge_case
@@ -48,7 +46,7 @@ def run_regression(run_dir: Path, docs: Path, harness: Harness | None = None) ->
     else:
         index.add_chunks(chunks)
     harness = harness or Harness(backend)
-    agent = ForgeAgent(harness, index, definition)
+    agent = ForgeAgent(harness, index, definition, run_dir=run_dir)
 
     def eval_cases(cases: list[EvalCase]) -> list[CaseResult]:
         out = []

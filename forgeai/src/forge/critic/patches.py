@@ -30,14 +30,19 @@ def patch_refusal_posture(defn: AgentDefinition) -> str:
 
 
 def patch_completeness(defn: AgentDefinition) -> str:
-    _append(defn, "Answer completeness",
-            "Address EVERY part of the question. For comparisons: state BOTH sides with "
-            "their numbers AND the difference. For 'how many' questions: give the total AND "
-            "the rule behind it. For entitlement or fee questions about a specific case: "
-            "state the general rule and apply it to the case with the arithmetic shown. "
-            "Use the calculator tool for ALL arithmetic — never compute in your head.")
-    return ("appended 'Answer completeness' section: comparisons state both sides + "
-            "difference; calculator mandatory for arithmetic")
+    has_calc = any(t.name == "calculator" for t in defn.tools)
+    body = (
+        "Address EVERY part of the question. For comparisons: state BOTH sides with "
+        "their numbers AND the difference. For 'how many' questions: give the total AND "
+        "the rule behind it. For entitlement or fee questions about a specific case: "
+        "state the general rule and apply it to the case with the arithmetic shown."
+    )
+    summary = "appended 'Answer completeness' section: comparisons state both sides + difference"
+    if has_calc:
+        body += " Use the calculator tool for ALL arithmetic — never compute in your head."
+        summary += "; calculator mandatory for arithmetic"
+    _append(defn, "Answer completeness", body)
+    return summary
 
 
 def patch_grounding(defn: AgentDefinition) -> str:
@@ -71,6 +76,15 @@ def patch_contract(defn: AgentDefinition) -> str:
             '{"answer": str, "refused": bool, "citations": [ids], "confidence": 0..1}. '
             "No prose before or after the JSON.")
     return "appended 'Output format reminder' section: JSON-only responses enforced"
+
+
+def select_prompt_defect_patch(defn: AgentDefinition, failing_results: list) -> PatchFn:
+    """Pick the specific prompt patch matching the observed defect telemetry."""
+    if any(getattr(r, "parse_failed", False) for r in failing_results):
+        return patch_contract
+    if any(getattr(r, "cited_valid", True) is False for r in failing_results):
+        return patch_grounding
+    return patch_completeness
 
 
 PATCH_LIBRARY: dict[FailureClass, PatchFn] = {

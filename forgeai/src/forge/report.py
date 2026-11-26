@@ -108,29 +108,88 @@ def build_report(run_dir: Path) -> str:
         frows = []
         for r in fails:
             c = case_by_id.get(r["case_id"], {})
+            reasons: list[str] = []
+            if r.get("parse_failed"):
+                reasons.append("output contract JSON invalid")
+            if r.get("cited_valid") is False:
+                reasons.append("invalid/missing citations")
+            if r.get("expected_retrieved") is False:
+                reasons.append("expected chunk not retrieved")
+            if r.get("grounded") is False:
+                reasons.append("ungrounded claim")
+            if r.get("numeric_ok") is False:
+                reasons.append(f"numeric mismatch (expected {c.get('expected_value')})")
+            if c.get("expected_refusal") and not r.get("refused") and not r.get("soft_refusal"):
+                reasons.append("answered instead of refusing")
+            missed = [f for f, ok in (r.get("fact_matches") or {}).items() if not ok]
+            if missed:
+                reasons.append(f"missed {len(missed)} fact(s): {missed[0][:60]}")
+            why = "; ".join(reasons) or f"cov={r.get('fact_coverage', 0):.2f}"
             frows.append([r["case_id"], c.get("kind", "?"),
                           (r.get("failure_class") or "unclassified"),
-                          c.get("question", "")[:90],
-                          f"cov={r.get('fact_coverage', 0):.2f}"])
-        L.append(_table(["id", "kind", "class", "question", "telemetry"], frows))
+                          c.get("question", "")[:80],
+                          why[:110]])
+        L.append(_table(["id", "kind", "class", "question", "why"], frows))
     L.append("")
 
-    totals = ledger.get("totals", {})
+    base_sc_path = run_dir / "scorecard_baseline_human.json"
+    base_res_path = run_dir / "results_baseline_human.jsonl"
+    if base_sc_path.exists():
+        base_sc = json.loads(base_sc_path.read_text(encoding="utf-8"))
+        delta = scorecard["score"] - base_sc["score"]
+        L.append("## Factory vs Human Baseline")
+        L.append("")
+        L.append(_table(
+            ["agent", "passed", "total", "score", "95% CI"],
+            [
+                ["Factory", scorecard["passed"], scorecard["total"],
+                 f"{scorecard['score']:.0%}", f"[{scorecard['wilson_low']:.0%}, {scorecard['wilson_high']:.0%}]"],
+                ["Human Baseline", base_sc["passed"], base_sc["total"],
+                 f"{base_sc['score']:.0%}", f"[{base_sc['wilson_low']:.0%}, {base_sc['wilson_high']:.0%}]"],
+            ],
+        ))
+        L.append("")
+        L.append(f"Delta: `{delta:+.0%}`.")
+        if base_res_path.exists():
+            base_res = {r["case_id"]: r for r in (json.loads(l) for l in base_res_path.read_text(encoding="utf-8").splitlines() if l.strip())}
+            fac_res = {r["case_id"]: r for r in results}
+            beats = [cid for cid in fac_res if fac_res[cid]["passed"] and not base_res.get(cid, {}).get("passed")]
+            loses = [cid for cid in fac_res if not fac_res[cid]["passed"] and base_res.get(cid, {}).get("passed")]
+            L.append(f"- Factory beats human on: {', '.join(beats) or 'none'}")
+            L.append(f"- Factory loses to human on: {', '.join(loses) or 'none'}")
+        L.append("")
+
+    entries = ledger.get("entries", [])
+    totals = ledger.get("totals") or {
+        "calls": len(entries),
+        "in_tokens": sum(e.get("in_tokens", 0) for e in entries),
+        "out_tokens": sum(e.get("out_tokens", 0) for e in entries),
+        "latency_ms": sum(e.get("latency_ms", 0) for e in entries),
+    }
+    by_stage = ledger.get("by_stage")
+    if not by_stage:
+        by_stage = {}
+        for e in entries:
+            agg = by_stage.setdefault(e.get("stage", "unknown"),
+                                      {"calls": 0, "in_tokens": 0, "out_tokens": 0, "latency_ms": 0})
+            agg["calls"] += 1
+            agg["in_tokens"] += e.get("in_tokens", 0)
+            agg["out_tokens"] += e.get("out_tokens", 0)
+            agg["latency_ms"] += e.get("latency_ms", 0)
+
     L.append("## How this was judged")
     L.append("")
-    L.append("- **L0 deterministic**: citation IDs validated against the index; refusals read "
-             "from the output contract (schema field, not prose); numeric answers recomputed "
-             "by the calculator tool; retrieval telemetry recorded per case.")
-    L.append("- **L1 micro-binary**: every expected fact checked against the answer as a "
-             "single YES/NO entailment call; coverage aggregated mechanically. No holistic "
-             "opinions, no position/verbosity bias surface.")
-    L.append("- **Eval-set self-defense**: expected facts verified against their own "
-             "grounding chunk at generation time; refusal/canary cases passed an "
-             "answerability gate; near-duplicates dropped.")
+    L.append("- **L0 deterministic**: citation IDs validated against the index and retrieved context; refusals read "
+             "from the output contract (schema field, not prose); numeric answers checked deterministically within "
+             "2% relative tolerance; retrieval telemetry recorded per case.")
+    L.append("- **L1 micro-binary**: every expected fact checked against the answer as a single YES/NO entailment "
+             "call, plus answer groundedness verified against cited chunks and tool outputs; coverage aggregated "
+             "mechanically without holistic scoring or position/verbosity ranking bias.")
+    L.append("- **Eval-set self-defense**: expected facts verified against their own grounding chunk at generation "
+             "time; refusal/canary cases passed an answerability gate; near-duplicates dropped.")
     L.append("")
     L.append("## Cost ledger")
     L.append("")
-    by_stage = ledger.get("by_stage", {})
     L.append(_table(["stage", "calls", "in tokens", "out tokens"],
                     [[s, v.get("calls", 0), v.get("in_tokens", 0), v.get("out_tokens", 0)]
                      for s, v in sorted(by_stage.items())]))

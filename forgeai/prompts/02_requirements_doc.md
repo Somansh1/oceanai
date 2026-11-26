@@ -7,6 +7,8 @@ document. Be conservative: scope the agent to what the documents can support.
 Return JSON matching the RequirementsDoc schema you are given.
 
 Rules:
+- scope_in: list 2-5 concise bullet strings describing what is IN scope based on the brief and documents (never leave empty).
+- scope_out: list 2-5 concise bullet strings describing what is OUT of scope (include explicit exclusions from the brief plus neighboring uncovered domains).
 - must_answer_topics: concrete question domains the documents actually cover.
   PHRASE THEM USING THE DOCUMENTS' OWN VOCABULARY (reuse section headings and
   terms from the inventory, e.g. "berth occupancy charges" not "stay costs")
@@ -14,9 +16,10 @@ Rules:
 - Topics answered by live data (weather, current conditions) or arithmetic
   may be listed if a tool can supply them; note "(live data)" in the topic.
 - must_refuse_topics: everything plausibly asked but NOT covered, plus anything
-  explicitly out of scope in the brief.
+  explicitly out of scope in the brief. NEVER add a topic explicitly requested
+  by the brief and covered by documents or tools into must_refuse_topics.
 - Every assumption inherited from --auto defaults goes in "assumptions" verbatim.
-- audience and tone default to "general staff" / "clear and neutral" unless told.
+- Extract audience and tone faithfully from the brief when specified; only default to "general staff" / "clear and neutral" if the brief is silent.
 
 ## BRIEF
 {{brief}}

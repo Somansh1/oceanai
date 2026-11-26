@@ -14,9 +14,9 @@ ForgeAI was evaluated across three distinct domains, including two complex multi
 
 | Benchmark Run | Domain and Corpus | Tools Attached | Score (95% Wilson CI) | Hardness Profile |
 |---|---|---|---|---|
-| **ShoreHR Policy** | Shore-staff HR policy document | 0 (all 4 tools rejected with logged rationale) | **86% [60% - 96%]** (vs. Human Baseline: **71% [45% - 88%]**) | Factual recall, policy boundary traps, leave entitlements |
-| **PortOps Marine** | Berth schedule CSV + bunker prices CSV + port tariff rules | 4 (CSV lookup, arithmetic calculator, date/time, Open-Meteo marine API) | **61% [39% - 80%]** | Multi-table lookup, temporal filtering, deterministic tariff derivation |
-| **University Library** | University library lending regulations (unseen domain) | 0 (tools rejected) | **79% [57% - 91%]** | Multi-tier borrowing limits, overdue sanctions, tier hierarchy |
+| **ShoreHR Policy** | Shore-staff HR policy document | 0 (all 4 tools rejected with logged rationale) | **70% [48% - 85%]** (`14/20`; vs. Human Baseline: **65% [43% - 82%]**, `13/20`) | Factual recall, policy boundary traps, cross-doc & numeric derivation, leave entitlements |
+| **PortOps Marine** | Berth schedule CSV + bunker prices CSV + port tariff rules | 4 (CSV lookup, arithmetic calculator, date/time, Open-Meteo marine API) | **43% [26% - 63%]** (`10/23`) | Multi-table lookup, temporal filtering, deterministic tariff derivation, claim groundedness |
+| **University Library** | University library lending regulations (unseen domain) | 0 (all 4 tools rejected with logged rationale) | **67% [45% - 83%]** (`14/21`) | Multi-tier borrowing limits, overdue sanctions, tier hierarchy |
 
 All artifacts, prompt tournament logs, iteration trajectories, and failure postmortems are committed under `forgeai/demos/`.
 
@@ -29,21 +29,21 @@ All artifacts, prompt tournament logs, iteration trajectories, and failure postm
 | **Intake Interviewer** | `src/forge/intake/interviewer.py` | Asks up to 5 clarifying questions tagged to specific architectural decisions; `--auto` mode derives conservative defaults without blocking. Generated requirements: `demos/*/run/requirements.json`. |
 | **Groundability Guard** | `src/forge/intake/groundability.py` | Constructs a topic-by-evidence density matrix. Unsupported topics are automatically rewritten to must-refuse topics. Groundability overrides are logged in `demos/*/run/report.md`. |
 | **Declarative Generator** | `src/forge/generate/generator.py` | Emits declarative `AgentDefinition` with system prompt, retrieval hyperparameters, tool bindings, and strict JSON output contract. Tools are attached only when justified by brief keywords. |
-| **Adversarial Compiler** | `src/forge/evals/compiler.py` | Synthesizes at least 15-20 adversarial test cases per run across answerable lookups, out-of-scope refusals, premise canaries, and rephrase pairs. Expected facts must pass an answerability self-check against source chunks. |
-| **Layered Multi-Tier Judge** | `src/forge/judge/judge.py`, `src/forge/judge/stats.py` | Combines L0 deterministic checks (citation ID validity, numeric tolerance and containment, refusal schema adherence) with L1 micro-binary claim scoring. Calculates Wilson score confidence intervals. |
-| **Critic-Optimizer Loop** | `src/forge/critic/optimizer.py`, `src/forge/critic/patches.py` | Classifies failures into four concrete failure classes (retrieval miss, prompt defect, hallucination, wrong refusal). Applies surgical versioned prompt sections or retrieval widenings (max 3 iterations) with patient early stopping. |
+| **Adversarial Compiler** | `src/forge/evals/compiler.py` | Synthesizes at least 20 adversarial test cases per run across answerable lookups, out-of-scope refusals, premise canaries, numeric derivations, ambiguous edge cases, cross-document synthesis, and rephrase pairs. Expected facts must pass an answerability self-check against source chunks. |
+| **Layered Multi-Tier Judge** | `src/forge/judge/judge.py`, `src/forge/judge/stats.py` | Combines L0 deterministic checks (citation ID validity, numeric tolerance and containment, refusal schema adherence) with L1 micro-binary claim scoring and claim groundedness verification against cited chunks and tool outputs. Calculates Wilson score confidence intervals. |
+| **Critic-Optimizer Loop** | `src/forge/critic/optimizer.py`, `src/forge/critic/patches.py` | Classifies failures into four concrete failure classes (retrieval miss, prompt defect, hallucination, wrong refusal). Applies surgical versioned prompt sections or retrieval widenings (max 3 iterations) with patient early stopping and automatic rollback when a patch degrades score. |
 | **Transparent Reporting** | `src/forge/report.py` | Generates a transparent Markdown quality report detailing scorecard trajectories, tool rejection rationales, iteration deltas, and remaining failure postmortems. Committed at `demos/*/run/report.md`. |
-| **Generic Chat Runtime** | `src/forge/runner/engine.py`, `src/forge/cli.py`, `ui/app.py` | Generic runtime that loads any declarative agent definition. Accessible via CLI (`forge chat`) or the Streamlit web dashboard. |
+| **Generic Chat Runtime** | `src/forge/runner/engine.py`, `src/forge/cli.py`, `ui/app.py` | Generic runtime that loads any declarative agent definition. Accessible via CLI (`forge run`, `forge chat`) or the Streamlit web dashboard. |
 | **Domain Demonstrations** | `demos/hr/`, `demos/portops/`, `demos/library/` | Complete end-to-end runs committed with requirements, definitions, generated eval sets, SQLite vector/FTS databases, scorecards, and reports. |
 
 ### Advanced Platform Features
 
 - **Prompt Tournament:** `src/forge/critic/optimizer.py` generates 3 candidate prompts and conducts an adversarial tournament on a pilot set (3 answerable, 2 traps) before selecting the production candidate.
-- **Budget Enforcement:** Token counts and millisecond latencies are tracked per stage in `demos/*/run/ledger.json` with early stopping if patch gain falls below threshold.
-- **Human Verification Checkpoint:** `--interactive` flag in `forge build` presents the generated requirements document for human review and edit before agent generation proceeds.
-- **Factory vs. Human Baseline:** A hand-written baseline was authored and evaluated against the identical eval set in `demos/hr/baseline_human/`. The factory achieved 86% vs. human 71% (+15 percentage point advantage).
+- **Budget Enforcement:** Token counts and model latencies are tracked per stage in `demos/*/run/ledger.json` and summarized in `report.md`, with `--max-tokens` / `--max-latency-s` caps and early stopping or rollback when patches fail to improve scores.
+- **Human Verification Checkpoint:** `--interactive` flag in `forge build` and `forge run` (plus the Studio form when unattended mode is unchecked) presents the generated requirements document for human review and edit before agent generation proceeds.
+- **Factory vs. Human Baseline:** A hand-written baseline was authored and evaluated against the identical eval set in `demos/hr/baseline_human/`. The factory achieved 70% (`14/20`, 0 unstable rephrase pairs) vs. human 65% (`13/20`, 4 unstable rephrase pairs; +5 percentage point advantage).
 - **Regression and Drift Detection:** `forge regression <run_dir> --docs <new_docs>` compares old eval cases against a refreshed document corpus to detect regressions and eval drift.
-- **Web Studio and Runner Dashboard:** Streamlit control panel (`ui/app.py`) featuring an interactive pipeline flow, prompt runner with chunk provenance inspection, and comparative benchmark suite.
+- **Web Studio and Runner Dashboard:** Streamlit control panel (`ui/app.py`) featuring an end-to-end `forge run` Studio workflow, prompt runner with chunk provenance inspection, and comparative benchmark suite.
 
 ---
 
@@ -168,6 +168,9 @@ python -m pytest tests -v
 ### CLI Commands
 
 ```bash
+# 0. Single-command unattended factory run (build -> evaluate -> optimize -> report)
+forge run --brief demos/hr/brief.md --docs demos/hr/docs --out runs/hr_agent --auto
+
 # 1. Build an agent unattended from brief and documents
 forge build --brief demos/hr/brief.md --docs demos/hr/docs --out runs/hr_agent --auto
 
@@ -219,7 +222,7 @@ streamlit run ui/app.py
     │   ├── retrieve/                                         # BM25 keyword index and sqlite-vec store
     │   ├── runner/                                           # Generic agent chat runtime
     │   └── tools/                                            # Tool registry (CSV, calculator, date, marine)
-    ├── tests/                                                # Unit test suite (18 unit tests)
+    ├── tests/                                                # Unit test suite (30 unit tests)
     ├── prompts/                                              # 11 numbered prompts referenced by hash
     ├── demos/
     │   ├── hr/                                               # ShoreHR artifacts and human baseline

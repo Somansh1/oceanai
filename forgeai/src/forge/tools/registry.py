@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import ast
 import operator
-from datetime import date, datetime
+from datetime import datetime
 from typing import Any, Callable
 
 import requests
@@ -61,8 +61,13 @@ def _csv_lookup(args: dict[str, Any]) -> str:
     column = str(args.get("column", ""))
     value = str(args.get("value", ""))
     try:
-        with open(path, newline="", encoding="utf-8") as f:
-            rows = list(_csv.DictReader(f))
+        if path.suffix.lower() == ".xlsx":
+            import pandas as pd
+            df = pd.read_excel(path, dtype=str).fillna("")
+            rows = df.to_dict(orient="records")
+        else:
+            with open(path, newline="", encoding="utf-8") as f:
+                rows = list(_csv.DictReader(f))
     except Exception as exc:
         return f"error: {exc}"
     if column and value:

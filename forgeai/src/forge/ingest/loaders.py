@@ -88,8 +88,6 @@ def _load_docx(path: Path) -> LoadedDoc:
     # interleave paragraphs and tables in document order
     body = d.element.body
     tbl_idx, para_idx = 0, 0
-    from docx.table import Table
-    from docx.text.paragraph import Paragraph
     for child in body.iterchildren():
         tag = child.tag.split("}")[-1]
         if tag == "p":

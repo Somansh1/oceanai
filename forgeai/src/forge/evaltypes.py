@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Literal
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -48,6 +48,7 @@ class CaseResult(BaseModel):
     retrieved_chunk_ids: list[str] = Field(default_factory=list)
     expected_retrieved: bool | None = None    # was an expected chunk in the retrieved set?
     cited_valid: bool | None = None           # all cited IDs exist in the index
+    grounded: bool | None = None              # answer claims entailed by cited chunks + tool outputs
     parse_failed: bool = False                # agent breached the output contract
     fact_matches: dict[str, bool] = Field(default_factory=dict)  # expected fact -> matched
     fact_coverage: float = 0.0
@@ -57,6 +58,7 @@ class CaseResult(BaseModel):
     judge_unstable: bool = False
     soft_refusal: bool = False        # refused-in-substance: "not specified/covered"
     grounded_reframe: bool = False    # canary answered with verified cited facts, no invention
+    tool_calls: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class IterationScorecard(BaseModel):
@@ -68,6 +70,7 @@ class IterationScorecard(BaseModel):
     wilson_high: float
     by_class: dict[str, int] = Field(default_factory=dict)   # kind -> fails
     by_failure: dict[str, int] = Field(default_factory=dict)  # FailureClass -> count
+    unstable_pairs: int = 0
 
 
 class PatchRecord(BaseModel):
@@ -79,6 +82,7 @@ class PatchRecord(BaseModel):
     failure_ids: list[str] = Field(default_factory=list)
     score_before: float | None = None
     score_after: float | None = None
+    rolled_back: bool = False
 
 
 class CostEntry(BaseModel):
